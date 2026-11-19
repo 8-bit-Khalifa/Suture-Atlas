@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Materials and needles — Suture Atlas</title>
+<meta name="description" content="Absorbable and non-absorbable sutures compared: structure, strength retention, use, and which needle goes with which tissue.">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e7a63'/%3E%3Cpath d='M7 24C12 19 13 11 21 8' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="index.html">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M4 27C10 21 11 11 20 7c3-1.4 6-1.2 8-0.6" stroke="#0e7a63" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M6 11c7 1 14 6 20 15" stroke="#2f6fcf" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-dasharray="3 3"/>
+    </svg>
+    <span>Suture Atlas<small>Interactive technique lab</small></span>
+  </a>
+  <nav class="mainnav">
+    <a href="atlas.html">Techniques</a>
+    <a href="match.html">Match</a>
+    <a href="test.html">Test</a>
+    <a href="materials.html" aria-current="page">Materials</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <p class="eyebrow">Reference</p>
+  <h1 style="margin-top:8px;max-width:20ch">Materials, and what they are for</h1>
+  <p class="lede" style="margin-top:14px">
+    A suture is three decisions in one packet: what the thread is made of, how it is built, and what
+    needle is swaged onto it. Get the thread wrong and the repair fails slowly; get the needle wrong and
+    it fails in your hand.
+  </p>
+
+  <figure class="threadfig">
+    <img src="assets/materials-threads.jpg" width="1392" height="752" loading="lazy"
+      alt="Eight suture threads side by side on a cream background: two pale monofilaments, two cream and lilac braided threads with a visible twist, a mint and a violet absorbable monofilament, a tan twisted gut and a fine steel wire.">
+    <figcaption><b>Read the thread, not the packet.</b> A smooth, even line is a monofilament; the twisted and plaited
+      ones are braided. The colour is the maker’s code, not a property of the material — the packet and the label are
+      what tell you the size, the material and how long it holds.</figcaption>
+  </figure>
+
+  <section class="two" style="margin-top:28px">
+    <div class="card">
+      <h3>Absorbable or non-absorbable?</h3>
+      <p class="small muted" style="margin-top:6px">
+        Ask how long the tissue needs support. If it has regained its own strength by then, an absorbable
+        thread is kinder — no second procedure, no retained foreign material. If it has not, the thread
+        must stay.
+      </p>
+      <dl class="kv" style="margin-top:12px">
+        <dt>Absorbable</dt><dd>Vicryl, Monocryl, PDS, gut. Strength is lost over weeks; the thread is then broken down and disappears.</dd>
+        <dt>Non-absorbable</dt><dd>Nylon, polypropylene, silk, steel. The thread keeps its strength; skin sutures are removed, deep ones stay for life.</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h3>Monofilament or braided?</h3>
+      <p class="small muted" style="margin-top:6px">
+        Structure decides handling and infection risk, and it decides how the knot behaves.
+      </p>
+      <dl class="kv" style="margin-top:12px">
+        <dt>Monofilament</dt><dd>Smooth, passes easily, low infection risk. Stiff with memory, so knots slip — 3–4 throws.</dd>
+        <dt>Braided</dt><dd>Soft, ties securely, the best handling. Drags through tissue and can harbour bacteria in its interstices.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section style="margin-top:32px">
+    <h2>The eight materials</h2>
+    <p class="small muted" style="margin-top:6px;max-width:70ch">Strength retention figures are approximate and vary with the product, the tissue and the patient.</p>
+    <div class="matgrid" id="matGrid" style="margin-top:16px"></div>
+  </section>
+
+  <section class="card wide" style="margin-top:32px">
+    <h3>Compare at a glance</h3>
+    <div class="tw" style="margin-top:8px"><table id="matTable"></table></div>
+    <p class="note">Times are approximate. Always check the product label before use.</p>
+  </section>
+
+  <section style="margin-top:32px">
+    <h2>Which material with which stitch</h2>
+    <p class="small muted" style="margin-top:6px;max-width:70ch">
+      “Typical” is what a practice would usually stock for that technique and species; “possible” is defensible
+      in the right animal; the rest are rarely used. Click a technique to watch it.
+    </p>
+    <div class="card" style="margin-top:14px"><div class="tw"><table id="matMatrix"></table></div></div>
+  </section>
+
+  <section style="margin-top:32px">
+    <h2>Needles</h2>
+    <div class="two" style="margin-top:14px">
+      <div class="card">
+        <div class="flow">
+          <div><span class="num">1</span><span><b>Cutting / reverse cutting.</b> A sharp edge runs along the shaft, so the needle slices through dense tissue. Skin, tendon, scar, oral mucosa. Reverse cutting puts the edge on the outside of the curve, which reduces the risk of the needle cutting out through the tissue.</span></div>
+          <div><span class="num">2</span><span><b>Taper (round-bodied).</b> A smooth point pushes tissue aside instead of cutting it, leaving a track that seals around the thread. Bowel, stomach, bladder, uterus, vessels, fascia.</span></div>
+          <div><span class="num">3</span><span><b>Blunt / tapercut.</b> Blunt points pass through friable organs such as liver and kidney without cutting vessels; tapercut combines a fine cut at the tip with a round shaft.</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Sizes you will actually use</h3>
+        <div class="tw" style="margin-top:8px"><table>
+          <thead><tr><th>Size</th><th>Typical use</th></tr></thead>
+          <tbody>
+            <tr><td>1 – 2</td><td>Linea alba and body wall in a horse, heavy tension lines, tendon repair</td></tr>
+            <tr><td>2-0 – 3-0</td><td>Dog skin and body wall, stomach, bladder, equine bowel</td></tr>
+            <tr><td>4-0</td><td>Cat skin, small bowel in dogs and cats, vessels</td></tr>
+            <tr><td>5-0 – 6-0</td><td>Eyelids, ears, digits, fine mucosal work</td></tr>
+            <tr><td>7-0 and finer</td><td>Microsurgery, nerve and vessel repair</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">The number of zeros is the diameter: more zeros, finer thread. Choose the finest thread that will hold the tissue.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:32px">
+    <h3>Choosing, in order</h3>
+    <div class="flow">
+      <div><span class="num">1</span><span><b>How long must it hold?</b> Days for mucosa and subcutis, weeks for bowel and bladder, months for fascia. That single question usually picks absorbable versus not.</span></div>
+      <div><span class="num">2</span><span><b>Is the field contaminated?</b> Monofilament and absorbable where bacteria are present; braided silk is a wick.</span></div>
+      <div><span class="num">3</span><span><b>How much tension, and will the patient cooperate?</b> High tension needs a stronger thread and often a mattress pattern; an animal that will not leave the wound alone may need skin sutures and a collar rather than a subcuticular line.</span></div>
+      <div><span class="num">4</span><span><b>What is the tissue like?</b> Tough tissue needs a cutting needle, delicate tissue a taper, friable tissue a blunt point.</span></div>
+      <div><span class="num">5</span><span><b>What does the patient need afterwards?</b> Skin sutures come out at 10–14 days — later on a limb or in a horse — so the owner needs a removal date, a collar and a plan for keeping the wound dry.</span></div>
+    </div>
+  </section>
+
+  <div class="banner" style="margin-top:26px">
+    <span aria-hidden="true">ⓘ</span>
+    <span><b>Reference only.</b> Local protocols, product availability and surgeon preference differ between practices and between species. Nothing here overrides your practice’s guidelines.</span>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="in">
+    <span>Suture Atlas — an educational project. Stylised anatomy; verify all details with your own texts and teachers.</span>
+    <span><a href="index.html">Home</a> · <a href="atlas.html">Techniques</a> · <a href="match.html">Match</a> · <a href="test.html">Test</a></span>
+  </div>
+</footer>
+
+<script src="assets/data.js"></script>
+<script>
+(function () {
+  const D = window.SUTURE, M = D.MATERIALS, T = D.TECHNIQUES;
+  document.getElementById('matGrid').innerHTML = M.map(m =>
+    '<div class="card matcard"><h3>' + m.name + '</h3><div class="sub">' + m.short + '</div>' +
+    '<p class="small">' + m.use + '</p>' +
+    '<dl class="kv"><dt>Type</dt><dd>' + m.abs + '</dd>' +
+    '<dt>Structure</dt><dd>' + m.structure + '</dd>' +
+    '<dt>Strength</dt><dd>' + m.strength + '</dd>' +
+    '<dt>Watch out</dt><dd>' + m.watch + '</dd>' +
+    '<dt>Removal</dt><dd>' + m.removal + '</dd></dl></div>'
+  ).join('');
+
+  document.getElementById('matTable').innerHTML =
+    '<thead><tr><th>Material</th><th>Absorbable?</th><th>Structure</th><th>Strength over time</th><th>Typical use</th></tr></thead><tbody>' +
+    M.map(m => '<tr><td><b>' + m.name + '</b></td><td>' + m.abs + '</td><td>' + m.structure +
+      '</td><td>' + m.strength + '</td><td>' + m.use + '</td></tr>').join('') + '</tbody>';
+
+  const fit = (t, id) => t.typical.indexOf(id) >= 0 ? '<span class="fit t">Typical</span>'
+    : t.possible.indexOf(id) >= 0 ? '<span class="fit p">Possible</span>' : '<span class="fit r">—</span>';
+
+  document.getElementById('matMatrix').innerHTML =
+    '<thead><tr><th>Technique</th><th>Tissue</th>' + M.map(m => '<th>' + m.name.replace(/ \(.*\)/, '') + '</th>').join('') + '</tr></thead><tbody>' +
+    T.map(t => '<tr><td><a href="atlas.html#' + t.id + '"><b>' + t.name + '</b></a></td><td class="small">' + t.group + '</td>' +
+      M.map(m => '<td>' + fit(t, m.id) + '</td>').join('') + '</tr>').join('') +
+    '</tbody>';
+})();
+</script>
+</body>
+</html>

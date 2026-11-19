@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Suture Atlas — see the whole stitch</title>
+<meta name="description" content="An interactive atlas of eight basic suturing techniques: 3D animated anatomy, indications, pros and cons, a matching game and a scored case test.">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e7a63'/%3E%3Cpath d='M7 24C12 19 13 11 21 8' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="index.html">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M4 27C10 21 11 11 20 7c3-1.4 6-1.2 8-0.6" stroke="#0e7a63" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M6 11c7 1 14 6 20 15" stroke="#2f6fcf" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-dasharray="3 3"/>
+    </svg>
+    <span>Suture Atlas<small>Interactive technique lab</small></span>
+  </a>
+  <nav class="mainnav">
+    <a href="atlas.html">Techniques</a>
+    <a href="match.html">Match</a>
+    <a href="test.html">Test</a>
+    <a href="materials.html">Materials</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Eight techniques · one wound at a time</p>
+      <h1>See the whole stitch, then prove you know it.</h1>
+      <p class="lede" style="margin-top:14px">
+        Every technique is a real 3D model you can rotate, cut and scrub through — needle path,
+        tissue layers, knot and all. Then connect each stitch to the tissue it belongs to,
+        and close a series of wounds for a score.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="atlas.html">Open the technique lab</a>
+        <a class="btn" href="test.html">Take the case test</a>
+      </div>
+      <p class="small muted" style="margin-top:18px">
+        Built for students revising basic suturing. Stylised anatomy, not to scale. Not a substitute
+        for supervised practice on models or patients.
+      </p>
+    </div>
+    <div class="hero-figure">
+      <svg viewBox="0 0 420 264" role="img" aria-label="Cross-section of a skin wound held closed by a suture, with the curved needle still attached.">
+        <defs>
+          <clipPath id="hl"><polygon points="18,96 196,96 210,178 18,178"/></clipPath>
+          <clipPath id="hr"><polygon points="224,96 402,96 402,178 210,178"/></clipPath>
+          <linearGradient id="th" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#6ea8ff"/><stop offset="1" stop-color="#2f6fcf"/>
+          </linearGradient>
+        </defs>
+        <rect width="420" height="264" fill="#0b1514"/>
+        <g stroke="#4fd3b0" stroke-width=".5" opacity=".1">
+          <path d="M0 44h420M0 88h420M0 132h420M0 176h420M0 220h420"/>
+          <path d="M70 0v264M140 0v264M210 0v264M280 0v264M350 0v264"/>
+        </g>
+        <g clip-path="url(#hl)">
+          <rect x="18" y="96" width="190" height="8" fill="#f0c7b2"/>
+          <rect x="18" y="104" width="190" height="34" fill="#e0958f"/>
+          <rect x="18" y="138" width="190" height="40" fill="#f0d79a"/>
+        </g>
+        <g clip-path="url(#hr)">
+          <rect x="212" y="96" width="190" height="8" fill="#f0c7b2"/>
+          <rect x="212" y="104" width="190" height="34" fill="#e0958f"/>
+          <rect x="212" y="138" width="190" height="40" fill="#f0d79a"/>
+        </g>
+        <g fill="none" stroke="#7a3b2c" stroke-width=".9" opacity=".55">
+          <polygon points="18,96 196,96 210,178 18,178"/>
+          <polygon points="224,96 402,96 402,178 210,178"/>
+        </g>
+        <path d="M64 74 C70 96 120 132 196 150" fill="none" stroke="url(#th)" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M224 150 C300 132 348 96 356 74" fill="none" stroke="url(#th)" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M64 74 C60 62 74 56 84 62 C94 68 92 80 82 82" fill="none" stroke="#e4ebf2" stroke-width="4.4" stroke-linecap="round"/>
+        <circle cx="64" cy="74" r="3.4" fill="#e4ebf2"/>
+        <circle cx="150" cy="176" r="5.4" fill="none" stroke="#4f8ee8" stroke-width="2.2"/>
+        <circle cx="158" cy="176" r="5.4" fill="none" stroke="#4f8ee8" stroke-width="2.2"/>
+        <text x="24" y="24" fill="#d7e7e3" opacity=".55" font-family="ui-monospace,monospace" font-size="9.5" letter-spacing="1.6">CROSS-SECTION · SIMPLE INTERRUPTED</text>
+        <text x="24" y="250" fill="#d7e7e3" opacity=".45" font-family="ui-monospace,monospace" font-size="9.5" letter-spacing="1.2">DRAG TO ORBIT · SCROLL TO ZOOM</text>
+      </svg>
+    </div>
+  </section>
+
+  <section class="modes">
+    <a class="mode" href="atlas.html">
+      <span class="n">01</span>
+      <strong>The technique lab</strong>
+      <span>Eight 3D animated techniques. Play, scrub, switch between 3D, cross-section and top view — the camera follows the step, so you never have to imagine what is behind the tissue.</span>
+    </a>
+    <a class="mode" href="match.html">
+      <span class="n">02</span>
+      <strong>Connect the stitch</strong>
+      <span>Drag a strand of suture to the tissue it belongs to. Skin, fascia, bowel, stomach, a round drain site — eight sites, one right answer each.</span>
+    </a>
+    <a class="mode" href="test.html">
+      <span class="n">03</span>
+      <strong>The case test</strong>
+      <span>A wound, a decision, then place the stitches yourself. You are scored on the technique you chose and on where you put it, with a breakdown at the end.</span>
+    </a>
+  </section>
+
+  <section style="margin-top:44px">
+    <p class="eyebrow">The eight</p>
+    <h2 style="margin-top:6px">Techniques in the atlas</h2>
+    <div class="techlist" id="techList"></div>
+  </section>
+
+  <section class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:44px">
+    <div class="card">
+      <h3>What this is for</h3>
+      <p class="small muted" style="margin-top:6px">Learning the <b>pattern</b> of each stitch — where the needle enters, what it takes, how the knot is placed, and which tissue each pattern is meant for. The animations are schematic so the geometry stays readable.</p>
+    </div>
+    <div class="card">
+      <h3>What it is not</h3>
+      <p class="small muted" style="margin-top:6px">Not a clinical protocol and not a substitute for supervised practice. Material choices, sizes and removal times vary by species, tissue and local policy — always check your own guidelines before treating any animal.</p>
+    </div>
+    <div class="card">
+      <h3>Works offline</h3>
+      <p class="small muted" style="margin-top:6px">Static pages with no accounts, no server and no tracking. Open the folder, or host it free on GitHub Pages. Your score lives in the browser tab and nowhere else.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="in">
+    <span>Suture Atlas — an educational project. Stylised anatomy; verify all details with your own texts and teachers.</span>
+    <span><a href="atlas.html">Techniques</a> · <a href="match.html">Match</a> · <a href="test.html">Test</a> · <a href="materials.html">Materials</a></span>
+  </div>
+</footer>
+
+<script src="assets/data.js"></script>
+<script src="assets/stitch.js"></script>
+<script>
+(function () {
+  const list = document.getElementById('techList');
+  list.innerHTML = window.SUTURE.TECHNIQUES.map(t =>
+    '<a href="atlas.html#' + t.id + '"><svg data-kind="' + t.draw + '" aria-hidden="true"></svg><span>' +
+    t.name + '<br><span class="small muted" style="font-weight:400">' + t.group + '</span></span></a>'
+  ).join('');
+  document.querySelectorAll('#techList svg').forEach(svg => {
+    StitchSVG.draw(svg, svg.dataset.kind, { organ: false });
+  });
+})();
+</script>
+</body>
+</html>
