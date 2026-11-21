@@ -10,6 +10,9 @@
   const stepsBtn = $('#stepsBtn');
   const playBtn = $('#playBtn'), seekEl = $('#seek'), timeEl = $('#time'), speedEl = $('#speed');
   const autoBtn = $('#autoBtn'), seeBtn = $('#seeBtn'), viewsEl = $('#views');
+  const motionBtn = $('#motionBtn'), mdBtn = $('#mdBtn');
+  const speciesBar = $('#speciesBar'), speciesNote = $('#speciesNote');
+  const SPECIES = D.SPECIES || [];
 
   const VIEWS = [
     { k: '3d', n: '3D' },
@@ -151,16 +154,61 @@
       b.setAttribute('aria-selected', String(b.dataset.id === t.id)));
     buildRail(t);
     buildInfo(t);
-    if (history.replaceState) history.replaceState(null, '', '#' + t.id);
+    /* keep the query string: `?motion=continuous` has to survive a change of tab */
+    if (history.replaceState) history.replaceState(null, '', location.pathname + location.search + '#' + t.id);
     if (lab) {
       lab.load(t.id);
     } else {
       document.querySelectorAll('#stepList li')[0]?.classList.add('cur');
     }
     autoBtn.setAttribute('aria-pressed', 'true');
-    if (lab) seeBtn.setAttribute('aria-pressed', String(lab.seeThrough));
+    if (lab) {
+      seeBtn.setAttribute('aria-pressed', String(lab.seeThrough));
+      markMotion(lab.motionMode);
+      markSpecies(lab.species);
+    }
     markView('3d');
   }
+
+  /* ---- species preset ---- */
+  speciesBar.insertAdjacentHTML('beforeend', SPECIES.map(s =>
+    '<button class="btn sm" data-species="' + s.id + '" aria-pressed="false">' + s.name + '</button>'
+  ).join(''));
+  function markSpecies(id) {
+    speciesBar.querySelectorAll('button[data-species]').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.species === id)));
+    const s = SPECIES.find(x => x.id === id);
+    speciesNote.textContent = s ? s.note : '';
+  }
+  /* Keep a choice in the query string so a reload comes back to the same view. */
+  function putParam(k, v) {
+    const u = new URL(location.href);
+    if (v == null) u.searchParams.delete(k); else u.searchParams.set(k, v);
+    if (history.replaceState) history.replaceState(null, '', u.pathname + u.search + (location.hash || ''));
+  }
+  speciesBar.addEventListener('click', e => {
+    const b = e.target.closest('button[data-species]');
+    if (!b || !lab) return;
+    markSpecies(lab.setSpecies(b.dataset.species));
+    putParam('species', b.dataset.species === 'dog' ? null : b.dataset.species);
+  });
+
+  /* ---- before/after movement model ---- */
+  function markMotion(m) {
+    const after = m === 'continuous';
+    motionBtn.textContent = after ? 'Movement: after' : 'Movement: before';
+    motionBtn.setAttribute('aria-pressed', String(after));
+    mdBtn.setAttribute('aria-pressed', String(m === 'md'));
+  }
+  /* Each button toggles its own model; pressing it again returns to the plain arc. */
+  function toggleMotion(mode) {
+    if (!lab) return;
+    const m = lab.setMotion(lab.motionMode === mode ? 'arc' : mode);
+    markMotion(m);
+    putParam('motion', m === 'arc' ? null : m);
+  }
+  motionBtn.addEventListener('click', () => toggleMotion('continuous'));
+  mdBtn.addEventListener('click', () => toggleMotion('md'));
 
   /* ---- controls ---- */
   seeBtn.addEventListener('click', () => {

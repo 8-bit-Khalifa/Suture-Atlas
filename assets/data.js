@@ -19,10 +19,10 @@ window.SUTURE = (function () {
   const SKIN = {
     type: 'linear', T: 14, hz: 15, span: 34, needle: 8, falloff: 0.34, notch: 5.2,
     layers: [
-      { n: 'Epidermis', t: 1.0, c: 0x4b3b32 },
-      { n: 'Dermis', t: 3.4, c: 0xdfcbab },
-      { n: 'Subcutaneous fat', t: 4.2, c: 0xe7c46b },
-      { n: 'Muscle and deep tissue', t: 5.4, c: 0xb8264d }
+      { n: 'Epidermis', t: 1.0, c: 0xc29c88, sc: 0xe7aeb4 },
+      { n: 'Dermis', t: 3.4, c: 0xdfcbab, sc: 0xf1e5c9 },
+      { n: 'Subcutaneous fat', t: 4.2, c: 0xe7c46b, sc: 0xbfb16f },
+      { n: 'Muscle and deep tissue', t: 5.4, c: 0xb8264d, sc: 0xc98b90 }
     ],
     edge: p => 0.03 + 1.5 * (1 - p),
     lift: (u, p) => p * (1.7 * Math.exp(-u / 4.0) - 0.9 * Math.exp(-u / 0.7))
@@ -30,10 +30,10 @@ window.SUTURE = (function () {
   const BOWEL = {
     type: 'linear', T: 4.4, hz: 17, span: 34, needle: 5, lumen: true, falloff: 0.42, notch: 2.8,
     layers: [
-      { n: 'Serosa', t: 0.4, c: 0xd6b9a6 },
-      { n: 'Muscularis', t: 1.4, c: 0xb4585f },
-      { n: 'Submucosa', t: 1.4, c: 0xe6d5b2 },
-      { n: 'Mucosa', t: 1.2, c: 0xa5323e }
+      { n: 'Serosa', t: 0.4, c: 0xd6b9a6, sc: 0xe9d4c2 },
+      { n: 'Muscularis', t: 1.4, c: 0xb4585f, sc: 0xd08b90 },
+      { n: 'Submucosa', t: 1.4, c: 0xe6d5b2, sc: 0xf0e3c8 },
+      { n: 'Mucosa', t: 1.2, c: 0xa5323e, sc: 0xc4737c }
     ],
     edge: p => 0.03 + 0.85 * (1 - p),
     lift: (u, p) => -p * (1.5 * Math.exp(-u / 2.8) - 0.75 * Math.exp(-u / 0.6))
@@ -42,9 +42,9 @@ window.SUTURE = (function () {
     type: 'round', T: 3.2, hz: 0, span: 30, needle: 4,
     r0: 10, r1: 27, falloff: 0.4,
     layers: [
-      { n: 'Serosa / skin', t: 0.5, c: 0xd9c3a4 },
-      { n: 'Muscle', t: 1.6, c: 0xb4585f },
-      { n: 'Mucosa', t: 1.1, c: 0xa5323e }
+      { n: 'Serosa / skin', t: 0.5, c: 0xd9c3a4, sc: 0xe9d6ba },
+      { n: 'Muscle', t: 1.6, c: 0xb4585f, sc: 0xd08b90 },
+      { n: 'Mucosa', t: 1.1, c: 0xa5323e, sc: 0xc4737c }
     ],
     edge: () => 0,
     lift: () => 0
@@ -69,9 +69,9 @@ window.SUTURE = (function () {
     {
       id: 'silk', name: 'Silk', short: 'Braided, non-absorbable by convention', abs: 'Non-absorbable (loses strength over ~1 year)',
       structure: 'Braided', strength: 'Loses strength slowly, degraded over years',
-      use: 'Oral and nasal mucosa, ligatures, securing drains and feeding tubes. The best handling of any material.',
-      watch: 'Wicks fluid and harbours bacteria; the most tissue-reactive suture. Avoid in contaminated wounds, the abdomen and on skin.',
-      colour: '#e8dcbd', removal: 'Mucosal stitches usually removed; ligatures and drain holders stay with the drain'
+      use: 'Ligatures, securing drains and feeding tubes. The best handling of any material — but the braid wicks fluid, so it is not the thread for mucosa or a contaminated field.',
+      watch: 'Wicks fluid and harbours bacteria; the most tissue-reactive suture. Avoid in contaminated wounds, in the mouth or nose, the abdomen and on skin.',
+      colour: '#e8dcbd', removal: 'Ligatures and drain holders stay with the drain; a skin stitch, if used, comes out at 10–14 days'
     },
     {
       id: 'vicryl', name: 'Polyglactin 910 (Vicryl)', short: 'Absorbable braided, coated', abs: 'Absorbable',
@@ -143,12 +143,14 @@ window.SUTURE = (function () {
       marks: [{ at: 'knot', label: 'Throw 3 of 3', dx: 34, dy: -46 }]
     },
     {
-      t: 'Cut the tails', cam: 'knot',
-      b: 'Trim the tails to about 3–5 mm. Too short and the knot can slip; too long and the ends irritate the skin or snag the next stitch.',
+      t: 'Cut the tails', cam: 'knot', cut: true,
+      b: 'Trim the tails to about 2–3 mm. Any shorter and the knot can work loose; any longer and the ends wick bacteria along a braided thread, irritate the skin and snag the next stitch.',
       cine: { c: [0, 1] }, dur: 2.8,
-      marks: [{ at: 'knot', label: 'Tails 3–5 mm', dx: 34, dy: -46 }]
+      marks: [{ at: 'knot', label: 'Tails 2–3 mm', dx: 34, dy: -46 }]
     }
-  ]);
+  /* Every one of these beats is a knotting beat: the needle is down and the
+     instruments work over the knot instead. The engine keys off this flag. */
+  ].map(s => Object.assign({ knot: true }, s)));
 
   /* On the ring the bite positions come from `ring`, so each pass only needs its
      arc depth; the count is the number of bites. */
@@ -164,7 +166,7 @@ window.SUTURE = (function () {
       tagline: 'Dogs · cats · horses — skin, fascia, muscle and mucosa: the default closing stitch',
       bestFor: 'Low to moderate tension in dog, cat and horse skin, and any wound where one stitch may need to come out early.',
       indications: [
-        'Skin lacerations and surgical incisions under low or moderate tension in dogs and cats, and limb wounds in horses',
+        'Skin lacerations and surgical incisions under low or moderate tension in dogs and cats, and clean, fresh limb wounds in horses — distal limb wounds often heal better by second intention',
         'Wounds that may become infected — a bite or a contaminated laceration: single stitches can be removed to let pus out',
         'Irregular, curved or stellate wounds from a bite or a fence, where every stitch needs its own tension',
         'Fascia, muscle and oral mucosa closed with an absorbable thread'
@@ -192,26 +194,27 @@ window.SUTURE = (function () {
       needle: 'Cutting or reverse-cutting for skin; taper for bowel, bladder or oral mucosa',
       needleWhy: 'Dog and horse skin is thick and tough, so it needs a cutting edge to pass without bending the needle; cat skin is thin and takes a finer cutting needle. Mucosa and bowel need a taper point that pushes tissue aside instead of cutting it.',
       size: '3-0 to 4-0 in dogs, 4-0 to 5-0 in cats, 2-0 to 3-0 on horse limbs; 4-0 to 5-0 on the face and ears',
+      /* One bite straight across the wound: in through the skin 5 mm out, down under
+         the wound, and out through the skin 5 mm out on the far side. The needle and
+         the thread it carries leave the skin, which is what the stitch looks like
+         from the outside - the needle moves from one part of the skin, through it,
+         out into the open, and in again at the next stitch. */
       passes: [
-        { side: 'L', a: [5, 0, 0], b: [0.8, 10.5, 0], sag: 3.4 },
-        { side: 'R', a: [0.8, 10.5, 0], b: [5, 0, 0], sag: 3.4 }
+        { side: 'L', a: [5, 0, 0], b: [5, 0, 0], toR: true, sag: 4.4 }
       ],
       tailU: 13, endU: 13, knot: ['L', 2.2, -0.9, 0],
       steps: [
-        { t: 'Assess the wound', cam: '3d', b: 'Clean, viable edges and no tension. Each stitch crosses the wound at a right angle and stands on its own. Plan the spacing before the first bite.' },
-        { t: 'Enter perpendicular to the skin', cam: '3d', pass: 0, f1: 0.45,
+        { t: 'Assess the wound', cam: '3d', dur: 1.4, b: 'Clean, viable edges and no tension. Each stitch crosses the wound at a right angle and stands on its own. Plan the spacing before the first bite.' },
+        { t: 'Enter perpendicular to the skin', cam: '3d', pass: 0, f1: 0.3,
           b: 'Hold the needle about two-thirds back from the tip. Place the point 5 mm from the edge at 90° to the skin and drive it in by rotating the wrist, not by pushing.',
           marks: [{ at: ['L', 5, 0, 0], label: 'Entry 5 mm out, 90° to skin', dx: -170, dy: -34 }] },
-        { t: 'Follow the needle’s own curve', cam: 'section', pass: 0, f0: 0.45,
-          b: 'Let the needle travel along its curve through epidermis and dermis and out into the subcutis, taking slightly more deep tissue than superficial tissue. That flask shape brings the base of the wound together and keeps the edges from turning inward.',
-          marks: [{ at: ['L', 0.8, 10.5, 0], label: 'Emerges low on the wound wall', dx: 30, dy: 34 }] },
-        { t: 'Reload inside the wound', cam: 'section', dur: 2,
-          b: 'Regrasp the needle two-thirds back from the tip inside the wound and bring it to the opposite wall at the same depth.' },
-        { t: 'Mirror the bite on the far side', cam: 'section', pass: 1, f1: 0.88,
-          b: 'Start the second bite at the same depth and at 90° to the cut surface, then exit at exactly the same distance from the edge so both edges sit level.',
-          marks: [{ at: ['R', 5, 0, 0], label: 'Same depth, same 5 mm', dx: 24, dy: -46 }] },
-        { t: 'Pull through along the arc', cam: '3d', pass: 1, f0: 0.88,
-          b: 'Regrasp the tip and draw needle and thread out along the same curve. Pulling straight up enlarges the needle track.' },
+        { t: 'Follow the needle’s own curve', cam: 'section', pass: 0, f0: 0.3, f1: 0.66,
+          b: 'Let the needle travel along its curve through epidermis and dermis and down under the wound, taking slightly more deep tissue than superficial tissue. That flask shape brings the base of the wound together and keeps the edges from turning inward.' },
+        { t: 'Bring the point out through the skin', cam: 'section', pass: 0, f0: 0.66, f1: 0.95,
+          b: 'Keep turning the wrist: the point tents the skin 5 mm out on the far side and breaks through it. When the tip shows in the wound, regrasp it — the thread follows the needle out of the track.',
+          marks: [{ at: ['R', 5, 0, 0], label: 'Out through the skin, same 5 mm', dx: 24, dy: -46 }] },
+        { t: 'Draw the needle out', cam: '3d', pass: 0, f0: 0.95, f1: 1.55,
+          b: 'Regrasp the tip two-thirds back now that it is clear of the skin and draw the needle and thread out along the same arc, so the thread runs through the track without tearing — pulling straight enlarges the track. A short tail stays on the first side, and the strand passes under the wound with nothing holding the edges yet.' },
         ...knotSteps('L'),
         { t: 'Repeat along the wound', cam: '3d', rows: true,
           b: 'Space stitches 5–10 mm apart. On a long wound place the first stitch in the middle and halve the remaining gaps, so the line stays even.', dur: 4 }
@@ -223,10 +226,10 @@ window.SUTURE = (function () {
       id: 'horizontal', name: 'Horizontal mattress', also: 'Horizontal mattress suture',
       group: 'Mattress', tissue: SKIN, draw: 'horizontal',
       tagline: 'Tension-bearing skin · thin or fragile skin · eversion',
-      bestFor: 'Skin that needs support and eversion: a dog’s flank or groin, a horse’s lower limb, thin skin in an older cat.',
+      bestFor: 'Skin that needs support and eversion: a dog’s flank or groin, a clean fresh horse limb wound, thin skin in an older cat.',
       indications: [
-        'Skin wounds under tension where a simple stitch would tear out — a dog’s flank, a horse’s lower limb',
-        'Thin, loose or fragile skin: older cats, the groin of a dog, skin over the point of the hock',
+        'Skin wounds under tension where a simple stitch would tear out — a dog’s flank, or a clean, fresh horse limb wound',
+        'Thin, loose or fragile skin: older cats, the groin of a dog, the flank of a deep-chested dog',
         'Wounds whose edges roll inward and need to be everted',
         'Skin grafts and flaps, and as a tension-relieving or haemostatic stitch in oozing tissue'
       ],
@@ -240,7 +243,7 @@ window.SUTURE = (function () {
         'Can strangulate the edges and cause ischaemia if tied too tightly',
         'Over-eversion leaves a ridge and a worse scar',
         'More fiddly to remove than a simple stitch',
-        'Not for the face or ears of a cat, or thin skin straight over a joint'
+        'The double bite can strangulate very thin or poorly vascular skin — a cat’s ear, the skin straight over a joint — so keep the bites small and tie only until the edges meet'
       ],
       checklist: [
         'Bites 5–10 mm from the edge and 5–10 mm apart along the wound — halve these on a cat',
@@ -339,9 +342,9 @@ window.SUTURE = (function () {
       id: 'vertical', name: 'Vertical mattress', also: 'Donati · Allgöwer suture',
       group: 'Mattress', tissue: SKIN, draw: 'vertical',
       tagline: 'Gaping wounds · loose skin · deep dead space',
-      bestFor: 'Wounds under real tension that also need the edges everted and the deep dead space closed — a dog’s elbow or a horse’s lower limb.',
+      bestFor: 'Wounds under real tension that also need the edges everted and the deep dead space closed — a dog’s elbow, or a clean fresh horse limb wound.',
       indications: [
-        'Skin wounds under marked tension: a dog’s elbow or hock, a horse’s lower limb',
+        'Skin wounds under marked tension: a dog’s elbow or hock; clean, fresh horse limb wounds, where distal limb wounds often heal better by second intention',
         'Loose, thin or redundant skin that rolls inward — older cats, the flank of a deep-chested dog, the ventral abdomen of a bitch',
         'Wounds with dead space under the skin that must be obliterated',
         'Closing skin and subcutaneous tissue in one stitch when anaesthetic time is short'
@@ -370,7 +373,7 @@ window.SUTURE = (function () {
       needleWhy: 'The deep limb has to pass a lot of tough dermis; a cutting edge keeps the needle straight, especially in a horse’s limb.',
       size: '2-0 to 3-0 in dogs and horses; 3-0 to 4-0 in cats',
       passes: [
-        { side: 'L', a: [10, 0, 0], b: [10, 0, 0], sag: 12, toR: true },
+        { side: 'L', a: [10, 0, 0], b: [10, 0, 0], sag: 9.5, toR: true },
         { side: 'R', a: [2.6, 0, 0], b: [2.6, 0, 0], sag: 1.4, toL: true }
       ],
       tailU: 14, endU: 14, knot: ['L', 6.4, -1.1, 0],
@@ -429,10 +432,10 @@ window.SUTURE = (function () {
       needleWhy: 'Skin needs a cutting edge. The linea alba is tough but not layered like skin, so a heavy taper or a cutting needle both work.',
       size: '2-0 to 3-0 for skin in dogs and horses, 3-0 to 4-0 in cats; 2-0 to 3-0 for the linea alba in a dog or cat, 2 in a horse',
       passes: [
-        { side: 'L', a: [6, 0, -12], b: [6, 0, -12], sag: 7, toR: true },
-        { side: 'L', a: [6, 0, -4], b: [6, 0, -4], sag: 7, toR: true },
-        { side: 'L', a: [6, 0, 4], b: [6, 0, 4], sag: 7, toR: true },
-        { side: 'L', a: [6, 0, 12], b: [6, 0, 12], sag: 7, toR: true }
+        { side: 'L', a: [6, 0, -12], b: [6, 0, -12], sag: 6.7, toR: true },
+        { side: 'L', a: [6, 0, -4], b: [6, 0, -4], sag: 6.7, toR: true },
+        { side: 'L', a: [6, 0, 4], b: [6, 0, 4], sag: 6.7, toR: true },
+        { side: 'L', a: [6, 0, 12], b: [6, 0, 12], sag: 6.7, toR: true }
       ],
       lockSide: 'R',
       tailU: 14, endU: 14, knot: ['R', 7, -1.2, 12], locks: [-12, -4, 4, 12],
@@ -494,8 +497,8 @@ window.SUTURE = (function () {
       needleWhy: 'A taper point pushes bowel wall aside instead of cutting it, so the thread track stays sealed.',
       size: '3-0 to 4-0 for small bowel in dogs and cats; 2-0 to 3-0 for stomach and bladder; 2-0 for equine small intestine',
       passes: [
-        { side: 'L', a: [6.5, 0, 0], b: [1.6, 0, 0], sag: 2.4 },
-        { side: 'R', a: [1.6, 0, 0], b: [6.5, 0, 0], sag: 2.4 }
+        { side: 'L', a: [6.5, 0, 0], b: [1.6, 0, 0], sag: 2.2 },
+        { side: 'R', a: [1.6, 0, 0], b: [6.5, 0, 0], sag: 2.2 }
       ],
       tailU: 10, endU: 10, knot: ['L', 4, -0.9, 0],
       steps: [
@@ -625,16 +628,18 @@ window.SUTURE = (function () {
       needle: 'Cutting for skin; taper for serosa or viscera',
       needleWhy: 'Match the point to the tissue: a cutting edge for skin, a taper for bowel or serosa, and a blunt point near liver or kidney.',
       size: '2-0 to 3-0 around a rectal prolapse in a dog; 3-0 to 4-0 for drain sites and skin in dogs and cats',
-      passes: ringBites(12, 0.55),
+      /* A purse-string bite dives into the wall and comes out again: with a shallow
+         sag the needle skimmed the surface and the thread never showed. */
+      passes: ringBites(12, 1.5),
       ring: { bites: 12, arc: 24 },
       steps: [
         { t: 'A ring, not a line', cam: 'top',
           b: 'The stitch travels around the opening at a constant distance from its edge, like a drawstring threaded through a hem. Every bite is the same size.' },
         { t: 'Start with a tail outside the ring', cam: '3d', pass: 0,
           b: 'Begin at one point on the ring, 2–3 mm from the edge, and leave a tail long enough to hold. Keep the needle parallel to the surface.' },
-        { t: 'Bites around the circle', cam: 'top', pass: 4,
-          b: 'Take small bites in and out of the tissue, following the circle. Each bite is the same length, with a short length of thread left lying over the surface between one bite and the next.' },
-        { t: 'Keep the spacing even', cam: 'top', pass: 8,
+        { t: 'Bites around the circle', cam: 'top', pass: 1, passEnd: 5,
+          b: 'Take small bites in and out of the tissue, following the circle. Each bite enters and leaves the surface, and a short length of thread is left lying over the tissue between one bite and the next.' },
+        { t: 'Keep the spacing even', cam: 'top', pass: 6, passEnd: 10,
           b: 'Even spacing prevents one side bunching. If the tissue is thin, take shallower bites rather than wider ones, and keep every bite at the same distance from the edge.' },
         { t: 'Come out beside the start', cam: '3d', pass: 11,
           b: 'Finish so both ends emerge on the same surface, next to each other. Pull the needle off and leave both ends free.' },
@@ -729,5 +734,24 @@ window.SUTURE = (function () {
     }
   ];
 
-  return { MATERIALS, TECHNIQUES: T, SITES, CASES };
+  /* Species presets: the numbers the copy quotes (3 mm bites in a cat, 5 mm in a
+     dog, 6-7 mm in a horse's limb) applied to the model. `thick` scales every
+     layer, `tension` scales how far the wound edges sit apart, `bite` scales the
+     distance of every bite from the edge and its depth. */
+  const SPECIES = [
+    {
+      id: 'dog', name: 'Dog', thick: 1, tension: 1, bite: 1,
+      note: 'Dog — 14 mm of skin, fat and muscle; bites 5 mm from the edge, 5–10 mm apart.'
+    },
+    {
+      id: 'cat', name: 'Cat', thick: 0.62, tension: 0.7, bite: 0.6,
+      note: 'Cat — thin, fragile skin (about 9 mm to muscle): 3 mm bites, placed gently, the knot only until the edges meet.'
+    },
+    {
+      id: 'horse', name: 'Horse', thick: 1.45, tension: 1.4, bite: 1.3,
+      note: 'Horse — thick, tough limb skin under tension (about 20 mm): 6–7 mm bites and a wider gap to close.'
+    }
+  ];
+
+  return { MATERIALS, TECHNIQUES: T, SITES, CASES, SPECIES };
 })();

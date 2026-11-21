@@ -30,6 +30,11 @@
 
   <div class="tabs" id="techTabs" role="tablist" aria-label="Technique"></div>
 
+  <div class="species" id="speciesBar" role="group" aria-label="Species preset">
+    <span class="lbl">Species</span>
+  </div>
+  <p class="note speciesNote" id="speciesNote"></p>
+
   <section class="lab">
     <div>
       <div class="stage" id="stage">
@@ -52,12 +57,15 @@
             <option value="2">2×</option>
           </select>
         </div>
+        <div class="legend" id="legend"></div>
       </div>
 
       <div class="controls">
         <div class="row" id="views"><span class="lbl">View</span></div>
         <div class="row" style="margin-left:auto">
           <button class="btn" id="seeBtn" aria-pressed="true" title="Show the tissue layers through the surface">See-through</button>
+          <button class="btn" id="motionBtn" aria-pressed="false" title="Compare the arc model with the reference movement set">Movement: before</button>
+          <button class="btn" id="mdBtn" aria-pressed="false" title="The interrupted stitch driven by the movement program from the markdown">Markdown movement</button>
           <button class="btn" id="autoBtn" aria-pressed="true" title="The camera moves to the plane that explains each step">Auto camera</button>
         </div>
       </div>
@@ -70,7 +78,6 @@
         <ol class="steps" id="stepList"></ol>
       </div>
 
-      <div class="legend" id="legend"></div>
     </div>
 
     <aside class="rail">
