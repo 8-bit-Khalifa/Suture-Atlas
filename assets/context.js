@@ -122,6 +122,18 @@ window.SutureContext = (function () {
       K.group.add(me);
       return me;
     };
+    /* Small repeated parts (vessels, teats) are queued by material and drawn as one
+       mesh each: a phone pays for every separate object it draws, not for the detail
+       inside one. */
+    K.batch = new Map();
+    K.queue = (geo, mat) => {
+      if (!K.batch.has(mat)) K.batch.set(mat, []);
+      K.batch.get(mat).push(geo);
+    };
+    K.flush = () => {
+      K.batch.forEach((geos, mat) => { if (geos.length) K.mesh(mergeGeos(T3, geos), mat); });
+      K.batch.clear();
+    };
     K.coat = rgb(COAT[sp.id] || COAT.dog);
     K.furH = (FUR[sp.id] || 1.5) * K.sz;
     K.coatName = sp.id === 'sheep' ? 'Fleece' : 'Hair coat';
@@ -129,6 +141,32 @@ window.SutureContext = (function () {
        with them and the thread never lies beyond it */
     K.kb = clamp(sp.bite || 1, 1, 1.45);
     return K;
+  }
+  /* several indexed geometries with the same attributes, as one */
+  function mergeGeos(T3, geos) {
+    let nv = 0, ni = 0;
+    geos.forEach(g => { nv += g.attributes.position.count; ni += g.index ? g.index.count : g.attributes.position.count; });
+    const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), uv = new Float32Array(nv * 2);
+    const idx = nv > 65535 ? new Uint32Array(ni) : new Uint16Array(ni);
+    let ov = 0, oi = 0;
+    geos.forEach(g => {
+      const n = g.attributes.position.count;
+      if (!g.attributes.normal) g.computeVertexNormals();
+      pos.set(g.attributes.position.array, ov * 3);
+      nor.set(g.attributes.normal.array, ov * 3);
+      if (g.attributes.uv) uv.set(g.attributes.uv.array, ov * 2);
+      if (g.index) { const I = g.index.array; for (let k = 0; k < I.length; k++) idx[oi + k] = I[k] + ov; oi += I.length; }
+      else { for (let k = 0; k < n; k++) idx[oi + k] = k + ov; oi += n; }
+      ov += n;
+      g.dispose();
+    });
+    const m = new T3.BufferGeometry();
+    m.setAttribute('position', new T3.BufferAttribute(pos, 3));
+    m.setAttribute('normal', new T3.BufferAttribute(nor, 3));
+    m.setAttribute('uv', new T3.BufferAttribute(uv, 2));
+    m.setIndex(new T3.BufferAttribute(idx, 1));
+    m.computeBoundingSphere();
+    return m;
   }
   function setCaps(K, list) {
     const T3 = K.T3;
@@ -279,7 +317,7 @@ window.SutureContext = (function () {
     const T3 = K.T3;
     if (pts.length < 2) return;
     const curve = new T3.CatmullRomCurve3(pts.map(p => new T3.Vector3(p[0], p[1], p[2])));
-    K.mesh(new T3.TubeGeometry(curve, Math.max(10, pts.length * 6), r, 6, false), mat);
+    K.queue(new T3.TubeGeometry(curve, Math.max(8, pts.length * 4), r, 5, false), mat);
   }
   function drapePlane(K, y) {
     const T3 = K.T3, g = new T3.PlaneGeometry(900, 900, 1, 1);
@@ -302,7 +340,7 @@ window.SutureContext = (function () {
     }[kind];
     const W = P.W * sz, H = P.H * sz;
     const loop = loafLoop(X, W, H, P.q, 22, 18, 20);
-    const zs = join(lin(-P.L, -hz - 40, 18), lin(-hz - 40, -hz, 16), lin(-hz, hz, 14), lin(hz, hz + 40, 16), lin(hz + 40, P.L, 18));
+    const zs = join(lin(-P.L, -hz - 40, 10), lin(-hz - 40, -hz, 16), lin(-hz, hz, 14), lin(hz, hz + 40, 16), lin(hz + 40, P.L, 10));
     const j0 = near(zs, -hz), j1 = near(zs, hz);
     const sR = loop[loop.iR].s, sL = loop[loop.iL].s;
     const dArc = q => q.win ? 0 : (q.s < sR ? sR - q.s : q.s - sL);
@@ -349,7 +387,7 @@ window.SutureContext = (function () {
           const g = new T3.SphereGeometry(1, 14, 10);
           g.scale(2.2 * sz, 1.3, 2.2 * sz);
           g.translate(q.x, q.y + 0.2, z);
-          K.mesh(g, nipMat);
+          K.queue(g, nipMat);
         });
       });
     }
@@ -437,8 +475,8 @@ window.SutureContext = (function () {
     if (K.sp.id === 'dog' || K.sp.id === 'cat') {
       [-110, -55, 0, 55, 110].forEach(z => [-1, 1].forEach(s => nipples.push([s * 52 * sz, z])));
     }
-    const xs = join(lin(-170, -60, 18), lin(-60, -X, 30), lin(-X, X, 22), lin(X, 60, 30), lin(60, 170, 18));
-    const zs = join(lin(-200, -90, 16), lin(-90, -hz, 44), lin(-hz, hz, 16), lin(hz, 90, 44), lin(90, 200, 16));
+    const xs = join(lin(-170, -60, 10), lin(-60, -X, 30), lin(-X, X, 22), lin(X, 60, 30), lin(60, 170, 10));
+    const zs = join(lin(-200, -90, 9), lin(-90, -hz, 34), lin(-hz, hz, 16), lin(hz, 90, 34), lin(90, 200, 9));
     const i0 = near(xs, -X), i1 = near(xs, X), j0 = near(zs, -hz), j1 = near(zs, hz);
     const geo = gridGeo(K, xs.length - 1, zs.length - 1, (i, j) => {
       const x = xs[i], z = zs[j], s = surf(x, z);
@@ -459,12 +497,12 @@ window.SutureContext = (function () {
       const g = new T3.SphereGeometry(1, 14, 10);
       g.scale(2.1 * sz, 1.3, 2.1 * sz);
       g.translate(n[0], surf(n[0], n[1]).y + 0.1, n[1]);
-      K.mesh(g, nipMat);
+      K.queue(g, nipMat);
     });
     /* a fenestrated drape over the skin beyond the clipped field */
     const hx = 88 * sz, hzD = 142;
-    const dx = join(lin(-260, -hx, 14), lin(-hx, hx, 30), lin(hx, 260, 14));
-    const dz = join(lin(-280, -hzD, 14), lin(-hzD, hzD, 40), lin(hzD, 280, 14));
+    const dx = join(lin(-260, -hx, 8), lin(-hx, hx, 22), lin(hx, 260, 8));
+    const dz = join(lin(-280, -hzD, 8), lin(-hzD, hzD, 26), lin(hzD, 280, 8));
     const di0 = near(dx, -hx), di1 = near(dx, hx), dj0 = near(dz, -hzD), dj1 = near(dz, hzD);
     K.mesh(gridGeo(K, dx.length - 1, dz.length - 1, (i, j) => {
       const x = dx[i], z = dz[j];
@@ -520,7 +558,7 @@ window.SutureContext = (function () {
     const loaf = loafLoop(X, W, H, P.q, 18, 14, 18);
     const raw = loaf.map(q => [q.x, q.y]);
     const circ = loaf.map(q => { const b = 2 * PI * q.s / loaf.total; return [R * Math.sin(b), -R - R * Math.cos(b)]; });
-    const zs = join(lin(-P.L, -P.Zs, 18), lin(-P.Zs, -hz, 14), lin(-hz, hz, 16), lin(hz, P.Zs, 14), lin(P.Zs, P.L, 18));
+    const zs = join(lin(-P.L, -P.Zs, 10), lin(-P.Zs, -hz, 14), lin(-hz, hz, 16), lin(hz, P.Zs, 14), lin(P.Zs, P.L, 10));
     const j0 = near(zs, -hz), j1 = near(zs, hz);
     const outers = zs.map(z => {
       const w = smooth(hz, hz + 24, Math.abs(z));
@@ -619,8 +657,8 @@ window.SutureContext = (function () {
       16 * sz * gauss(x / 26, (z + 66 * sz) / 26));
     const furW = r => smooth(82, 94, r);
     const pig = rgb(ANUS_LAYERS[0].c), skinC = rgb(0xc9a08f);
-    const rs = join(lin(r1, 45, 14), lin(45, 100, 24), lin(100, 180, 14));
-    const NT = 96;
+    const rs = join(lin(r1, 45, 14), lin(45, 100, 18), lin(100, 180, 8));
+    const NT = 72;
     K.mesh(gridGeo(K, NT, rs.length - 1, (i, j) => {
       const th = 2 * PI * i / NT, r = rs[j], x = r * Math.cos(th), z = r * Math.sin(th), w = furW(r);
       return { p: [x, hgt(r, x, z) + K.furH * w, z], c: mix(mix(pig, skinC, smooth(r1 + 4, 46, r)), K.coat, w), t: [x * 0.04, z * 0.04] };
@@ -630,7 +668,7 @@ window.SutureContext = (function () {
 
     /* The rectum below the anus: it opens from the ring's own opening, which narrows as
        the purse-string is drawn, so it is rebuilt with the ring. */
-    const ys = lin(-T, -80, 26), NR = 48;
+    const ys = lin(-T, -80, 20), NR = 36;
     const rIn = (y, r0) => lerp(r0, 15 * sz, smooth(-T, -T - 26, y));
     const funnel = (rf, flip) => gridGeo(K, NR, ys.length - 1, (i, j) => {
       const a = 2 * PI * i / NR, r = rf(ys[j]);
@@ -706,7 +744,7 @@ window.SutureContext = (function () {
       let tr = pn[0] - pp[0], ty = pn[1] - pp[1]; const l = Math.hypot(tr, ty) || 1; tr /= l; ty /= l;
       return { r: p[0], y: p[1], nr: -ty, ny: tr };
     });
-    const NT = 96;
+    const NT = 72;
     const lathe = (off, flip) => gridGeo(K, NT, prof.length - 1, (i, j) => {
       const a = 2 * PI * i / NT, q = prof[j], r = q.r - q.nr * off, y = q.y - q.ny * off;
       return { p: [r * Math.cos(a), y, r * Math.sin(a)], t: [r * Math.cos(a) * 0.04, r * Math.sin(a) * 0.04] };
@@ -773,6 +811,7 @@ window.SutureContext = (function () {
     if (list.indexOf(site) < 0) site = list[0];
     const K = kit(env);
     const out = SITES[site].make(K);
+    K.flush();
     return {
       site,
       caption: (K.sp.name || 'Dog') + ' — ' + SITES[site].name,

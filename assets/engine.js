@@ -25,12 +25,15 @@ window.SutureLab = (function () {
       host.innerHTML = '<div class="nogl">This browser could not start 3D graphics. Try another browser or enable hardware acceleration.</div>';
       return null;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    /* Phones and tablets (a touch screen as the main pointer) get a lighter picture:
+       a little less pixel density, which their dense screens hide, and cheaper shadows. */
+    const LITE = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LITE ? 1.5 : 2));
     renderer.localClippingEnabled = true;
     /* Soft shadows: instruments throw a real shadow across the wound, which is most
        of what makes them read as solid objects lying on the tissue. */
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = T3.PCFSoftShadowMap;
+    renderer.shadowMap.type = LITE ? T3.PCFShadowMap : T3.PCFSoftShadowMap;
     host.insertBefore(renderer.domElement, host.firstChild);
 
     const scene = new T3.Scene();
@@ -41,7 +44,7 @@ window.SutureLab = (function () {
     scene.add(new T3.HemisphereLight(0xf2ece2, 0x2a2420, 0.34));
     const key = new T3.DirectionalLight(0xfff1de, 0.62); key.position.set(24, 40, 26); scene.add(key);
     key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.mapSize.set(LITE ? 512 : 1024, LITE ? 512 : 1024);
     key.shadow.camera.left = -46; key.shadow.camera.right = 46;
     key.shadow.camera.top = 46; key.shadow.camera.bottom = -46;
     key.shadow.camera.near = 4; key.shadow.camera.far = 140;
