@@ -2514,10 +2514,33 @@ window.SutureLab = (function () {
     else window.addEventListener('resize', resize);
     resize();
 
+    let onScreen = true, idleFrames = 0, lastSig = '';
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(es => { onScreen = es[es.length - 1].isIntersecting; }).observe(host);
+    }
+    /* everything that changes what the frame shows */
+    function frameSig() {
+      return [tech && tech.id, speciesId, CTX.on, CTX.site, S.t.toFixed(4), S.view, S.seeThrough, S.auto,
+        goal.az.toFixed(2), goal.el.toFixed(2), goal.d.toFixed(2), goal.tx.toFixed(2), goal.ty.toFixed(2), goal.tz.toFixed(2),
+        cv.width, cv.height].join('|');
+    }
+    function isIdle() {
+      if (S.playing || drag) { idleFrames = 0; lastSig = ''; return false; }
+      const settled = ['az', 'el', 'd', 'tx', 'ty', 'tz'].every(k =>
+        Math.abs(camV[k]) < 0.002 && Math.abs((k === 'az' ? ((goal[k] - cam[k] + 540) % 360) - 180 : goal[k] - cam[k])) < 0.002);
+      const sig = frameSig();
+      if (!settled || sig !== lastSig) { lastSig = sig; idleFrames = 0; return false; }
+      /* a few more frames after the last change, so everything has caught up */
+      return ++idleFrames > 4;
+    }
     function frame(now) {
       /* hidden behind another player (the technique lab's knot tab): draw nothing
          and report nothing until the canvas is shown again */
       if (!cv.offsetWidth) { last = now; requestAnimationFrame(frame); return; }
+      /* Rest when there is nothing new to draw: scrolled out of view, or paused with
+         the camera settled and nothing changed. The last frame stays on screen, so the
+         picture is the same; a phone just stops redrawing it sixty times a second. */
+      if (!onScreen || isIdle()) { last = now; requestAnimationFrame(frame); return; }
       const dt = Math.min(.05, (now - last) / 1000); last = now;
       frameDt = dt;
       if (S.playing) {
