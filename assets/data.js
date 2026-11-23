@@ -479,6 +479,79 @@ window.SUTURE = (function () {
       ]
     },
 
+    /* 5b. INTRADERMAL (SUBCUTICULAR)
+       A buried continuous line: every bite enters the dermis from inside the wound,
+       runs parallel to the skin and comes back out into the wound, on alternate
+       sides. `bitePlane: 'dermal'` makes the engine swing each bite out sideways into
+       the dermis; `buried` keeps the crossings under the skin; the ends (`tailD`) are
+       buried knots, so there is no instrument tie on the surface. */
+    {
+      id: 'intradermal', name: 'Intradermal', also: 'Subcuticular · buried continuous',
+      group: 'Buried', tissue: SKIN, draw: 'intradermal',
+      tagline: 'Skin closed from inside: no stitches on the surface, nothing to remove',
+      bestFor: 'A clean, low-tension skin incision where no stitch should show or need removing — a spay or castration wound in a dog or cat.',
+      indications: [
+        'Clean surgical incisions under little tension, such as a spay or castration wound in a dog or cat',
+        'Animals that will not tolerate suture removal, or owners who cannot bring them back',
+        'Patients likely to lick or chew at stitches on the surface',
+        'Where the neatest scar matters: a fine line with no cross-hatch marks'
+      ],
+      pros: [
+        'Nothing on the surface: nothing to lick, chew or catch',
+        'No suture marks; the neatest scar of any skin closure',
+        'With an absorbable thread there is no removal visit',
+        'Low infection risk with a monofilament, because no thread crosses the skin'
+      ],
+      cons: [
+        'Slower and more fiddly than a closure on the surface',
+        'Holds little tension: the subcutis must be closed first, so the edges already meet',
+        'Not for contaminated or infected wounds, which need to be able to drain',
+        'Bites at uneven depth leave a ridge or a gap along the scar'
+      ],
+      checklist: [
+        'Close the subcutis first, so the dermis edges already lie together',
+        'Start with a knot buried at one end of the wound',
+        'Each bite runs in the dermis, parallel to the skin surface, 5–8 mm long',
+        'Start each bite level with, or slightly behind, where the last one came out on the other side',
+        'Keep every bite at the same depth, and finish with a buried knot'
+      ],
+      typical: ['monocryl', 'vicryl'], possible: ['pds'],
+      needle: 'Reverse cutting, small',
+      needleWhy: 'The bite runs through tough dermis, so a fine reverse-cutting needle passes where a taper would drag; small, because the bite is only a few millimetres deep.',
+      size: '3-0 to 4-0 in dogs, 4-0 in cats, 2-0 to 3-0 in horses and cattle',
+      passes: [
+        { side: 'L', a: [0.2, 1.8, -13], b: [0.2, 1.8, -7] },
+        { side: 'R', a: [0.2, 1.8, -7.5], b: [0.2, 1.8, -1.5] },
+        { side: 'L', a: [0.2, 1.8, -2], b: [0.2, 1.8, 4] },
+        { side: 'R', a: [0.2, 1.8, 3.5], b: [0.2, 1.8, 9.5] },
+        { side: 'L', a: [0.2, 1.8, 9], b: [0.2, 1.8, 14] }
+      ],
+      bitePlane: 'dermal', buried: true, radius: 3.6,
+      tailU: 0.3, endU: 0.3, tailD: 2.8, knot: ['L', 0.3, 0.8, 14],
+      steps: [
+        { t: 'Close the layer beneath first', cam: 'section', dur: 3.2,
+          b: 'An intradermal line holds the skin edges together but carries very little tension. The subcutis is closed first, so the edges of the dermis already lie together before the first bite.' },
+        { t: 'Bury the starting knot', cam: '3d', dur: 2.8,
+          b: 'Start at one end with a knot tied deep in the wound: the needle goes in from below and comes out in the dermis, so the knot ends up under the skin, not on it.',
+          marks: [{ at: ['L', 0.3, 2.8, -13], label: 'Buried knot', dx: -140, dy: -34 }] },
+        { t: 'A bite in the dermis, parallel to the skin', cam: '3d', pass: 0,
+          b: 'From inside the wound, the needle enters the dermis 1–2 mm below the surface and runs parallel to the skin for 5–8 mm before coming back out into the wound. Nothing passes through the surface.',
+          marks: [{ at: ['L', 0.8, 2.2, -10], label: 'Bite in the dermis', dx: -160, dy: -34 }] },
+        { t: 'Cross straight over', cam: 'top', pass: 1,
+          b: 'The next bite starts on the opposite edge, level with or slightly behind where the last one came out. Starting ahead of it pulls the line into a zigzag that puckers the skin.' },
+        { t: 'Alternate sides along the wound', cam: '3d', pass: 2, passEnd: 3,
+          b: 'Same depth and same length every time, switching sides with each bite, so the edges meet level along the whole wound.' },
+        { t: 'The last bite', cam: '3d', pass: 4,
+          b: 'Take the last bite at the far end of the wound. The thread now runs back and forth across the wound under the skin.' },
+        { t: 'Draw the line snug', cam: 'top', dur: 3.8, cine: { p: [0, 1] },
+          b: 'Pull the thread gently, a little at a time, so the edges slide together along the whole length. The skin closes with no stitch showing.',
+          marks: [{ at: 'wound', label: 'Edges meet, nothing on the surface', dx: 26, dy: -46 }] },
+        { t: 'Bury the finishing knot', cam: 'section', dur: 3.6,
+          b: 'Finish with a knot tied in the depth of the wound so it sinks under the skin, and cut the ends short. With an absorbable thread there is nothing to remove.',
+          marks: [{ at: 'knot', label: 'Knot buried at the end', dx: 26, dy: -46 }] }
+      ]
+    },
+
     /* 6. LEMBERT */
     {
       id: 'lembert', name: 'Lembert', also: 'Lembert suture',
@@ -756,81 +829,135 @@ window.SUTURE = (function () {
   ];
 
   /* ---------------- matching game ---------------- */
+  /* one wound for each pattern; `scene` is its picture in scenes.js, the same as the
+     case test's, and the pairings agree with the case test */
   const SITES = [
-    { id: 'skin', tech: 'interrupted', name: 'Dog — clean limb laceration', sub: '4 cm, low tension, healthy skin', art: 'skin' },
-    { id: 'tension', tech: 'horizontal', name: 'Dog — thin skin under tension', sub: 'Flank or groin, edges rolling in', art: 'tension' },
-    { id: 'oblique', tech: 'cross', name: 'Horse — oblique flank laceration', sub: 'Wire injury, gapes in two directions', art: 'oblique' },
-    { id: 'gaping', tech: 'vertical', name: 'Cat — gaping stifle wound', sub: 'Thin loose skin, deep dead space', art: 'gaping' },
-    { id: 'fascia', tech: 'interlock', name: 'Dog — midline laparotomy', sub: '20 cm linea alba, fast closure', art: 'fascia' },
-    { id: 'bowel', tech: 'lembert', name: 'Dog — small bowel enterotomy', sub: 'Serosa must meet serosa', art: 'bowel' },
-    { id: 'stomach', tech: 'cushing', name: 'Dog — gastrotomy incision', sub: 'Long, continuous, inverting', art: 'stomach' },
-    { id: 'round', tech: 'purse', name: 'Dog — thoracic drain site', sub: 'Close snugly around the tube', art: 'round' }
+    { id: 'limb', tech: 'interrupted', species: 'dog', scene: 'limb', name: 'Clean limb laceration', sub: '4 cm, little tension, healthy skin' },
+    { id: 'tension', tech: 'horizontal', species: 'dog', scene: 'tension', name: 'Skin under tension after a mass removal', sub: 'Flank; the edges roll inward' },
+    { id: 'oblique', tech: 'cross', species: 'horse', scene: 'oblique', name: 'Oblique flank laceration', sub: 'Wire injury, pulled in two directions' },
+    { id: 'gaping', tech: 'vertical', species: 'cat', scene: 'gaping', name: 'Gaping stifle wound', sub: 'Thin loose skin, dead space beneath' },
+    { id: 'flank', tech: 'interlock', species: 'cattle', scene: 'flank', name: 'Long flank incision, animal standing', sub: 'Skin closure after a caesarean' },
+    { id: 'spay', tech: 'intradermal', species: 'cat', scene: 'belly', name: 'Spay incision in a cat that cannot be handled again', sub: 'Clean, no tension, nothing to remove' },
+    { id: 'bowel', tech: 'lembert', species: 'dog', scene: 'bowel', name: 'Small-bowel enterotomy', sub: 'Serosa must meet serosa, a few bites' },
+    { id: 'stomach', tech: 'cushing', species: 'dog', scene: 'stomach', name: 'Gastrotomy', sub: 'Long, continuous and inverting' },
+    { id: 'prolapse', tech: 'purse', species: 'sheep', scene: 'anus', name: 'Rectal prolapse, pushed back in', sub: 'Hold it in, leave an opening' }
   ];
 
-  /* ---------------- case test ---------------- */
+  /* ---------------- case test ----------------
+     Eleven patients, every pattern at least once and every species at least once.
+     `scene` is the picture (drawn in test.js); `targets` are where along the wound
+     (0 to 1) the stitches of the best pattern cross it; `ok` are acceptable
+     second choices, which score part of the decision points. */
   const CASES = [
     {
-      id: 'c1', art: 'skin', wound: 'line', length: 4,
-      title: 'Clean thigh laceration — working dog',
-      text: 'A 4 cm clean laceration on the lateral thigh of a healthy 3-year-old working dog, seen two hours after the injury. The wound has been clipped and lavaged, the edges are clean and viable, and they fall together with almost no tension. The dog is due back at work in ten days.',
+      id: 'c1', species: 'dog', scene: 'limb', wound: 'line',
+      title: 'Clean thigh laceration',
+      patient: 'Border collie · 3 years · male', site: 'Lateral thigh · 4 cm', seen: '2 hours after the injury',
+      text: 'A working dog caught its thigh on sheet metal. The wound has been clipped and lavaged; the edges are clean and viable and fall together with almost no tension. The dog is due back at work in ten days.',
       best: 'interrupted', ok: ['vertical', 'horizontal'],
-      targets: [0.3, 0.5, 0.7], targetCount: 3,
+      targets: [0.3, 0.5, 0.7],
       why: 'Low-tension skin with clean edges is the standard case for simple interrupted stitches: precise apposition, tension set stitch by stitch, and a single stitch can be removed early if the wound begins to discharge.',
       trap: 'A mattress pattern would hold, but it puts more foreign material and more tension into skin that needs neither, and leaves a heavier scar on a limb that has to move.'
     },
     {
-      id: 'c2', art: 'gaping', wound: 'line', length: 6,
-      title: 'Gaping stifle wound — older cat',
-      text: 'A 6 cm gaping laceration over the stifle of a thin 12-year-old cat, seen six hours after the injury and still clean. The skin is thin and loose, the edges curl inward, and the wound opens whenever the joint flexes. There is dead space under the skin and the cat will not tolerate a dressing.',
+      id: 'c2', species: 'sheep', scene: 'bite', wound: 'line',
+      title: 'Dog-bite wound on the neck',
+      patient: 'Texel ewe · 2 years', site: 'Side of the neck · 5 cm', seen: 'The morning after a dog attack',
+      text: 'The wound has been clipped well back, debrided and lavaged, and a drain placed below it. The edges now meet without tension, but bite wounds are contaminated, and this one may well discharge over the next few days.',
+      best: 'interrupted', ok: ['vertical'],
+      targets: [0.25, 0.5, 0.75],
+      why: 'In a wound that may become infected, every stitch has to stand alone: if it discharges, one or two stitches can be cut to let it drain without opening the rest of the closure.',
+      trap: 'A continuous line is quicker, but cutting any part of it to drain the wound loosens all of it. And keep the fleece out: wool caught in the wound is a source of infection.'
+    },
+    {
+      id: 'c3', species: 'cat', scene: 'gaping', wound: 'line',
+      title: 'Gaping stifle wound',
+      patient: 'Domestic shorthair · 12 years · female, neutered', site: 'Over the stifle · 6 cm', seen: '6 hours after the injury',
+      text: 'The skin is thin and loose, the edges curl inward, and the wound gapes whenever the joint flexes. There is dead space under the skin, and the cat will not tolerate a dressing.',
       best: 'vertical', ok: ['horizontal', 'cross'],
-      targets: [0.22, 0.5, 0.78], targetCount: 3,
-      why: 'Vertical mattress does both jobs: the far-far limb closes the dead space and carries the tension, and the near-near limb everts the curled edges away from the joint surface.',
-      trap: 'A simple stitch cuts straight through thin feline skin and leaves the edges inverted. Horizontal mattress is a reasonable second choice but addresses the dead space less well.'
+      targets: [0.22, 0.5, 0.78],
+      why: 'A vertical mattress does both jobs: the far-far limb closes the dead space and carries the tension, and the near-near limb everts the curled edges.',
+      trap: 'A simple stitch cuts straight through thin feline skin and leaves the edges turned in. A horizontal mattress is a reasonable second choice, but it does less for the dead space.'
     },
     {
-      id: 'c3', art: 'oblique', wound: 'line', length: 7,
-      title: 'Oblique flank laceration — horse',
-      text: 'A 7 cm laceration running obliquely across the flank of a horse, from a wire fence. The two edges are pulled in different directions by the flank musculature, so a stitch placed straight across drags the wound out of line as the horse moves. The wound is fresh, clean and fully clipped.',
+      id: 'c11', species: 'cat', scene: 'belly', wound: 'line',
+      title: 'Spay incision in a feral cat',
+      patient: 'Feral domestic shorthair · about 1 year · female', site: 'Ventral midline · 3 cm skin incision', seen: 'End of a spay at a trap-neuter-return clinic',
+      text: 'The linea alba and the subcutis are closed, and the skin edges already meet without tension. The cat will be released as soon as she has recovered, and she cannot be caught again to have stitches removed.',
+      best: 'intradermal', ok: [],
+      targets: [0.2, 0.4, 0.6, 0.8],
+      why: 'An intradermal line in absorbable thread, buried under the skin, leaves nothing on the surface for the cat to lick or chew and nothing to remove, which is exactly what a cat that cannot be handled again needs.',
+      trap: 'Stitches on the surface would have to come out in 10–14 days, and a cat that is never caught again keeps them. And an intradermal line only works here because the deeper layers are already closed and the edges meet without tension.'
+    },
+    {
+      id: 'c4', species: 'dog', scene: 'tension', wound: 'line',
+      title: 'Skin under tension after a mass removal',
+      patient: 'Labrador retriever · 9 years · female, neutered', site: 'Flank · 5 cm defect', seen: 'At the end of surgery',
+      text: 'A skin mass has been removed from the flank with a margin. The edges of the defect can be brought together, but only under tension, and they roll inward. The skin around it is healthy.',
+      best: 'horizontal', ok: ['vertical', 'cross'],
+      targets: [0.32, 0.68],
+      why: 'The two limbs of a horizontal mattress share the load across a wide strip of skin, so the tension is spread instead of concentrated at each bite, and the edges are everted rather than rolling in.',
+      trap: 'Simple interrupted stitches cut through skin under this tension. Tie the mattress only until the edges meet: skin that blanches inside the loop is losing its blood supply.'
+    },
+    {
+      id: 'c5', species: 'horse', scene: 'oblique', wound: 'line',
+      title: 'Oblique flank laceration',
+      patient: 'Thoroughbred gelding · 7 years', site: 'Flank · 7 cm, oblique', seen: 'Fresh, from a wire fence',
+      text: 'The laceration runs obliquely across the flank. Its two edges are pulled in different directions by the flank muscles, so a stitch placed straight across drags the wound out of line as the horse moves. It is clean and fully clipped.',
       best: 'cross', ok: ['horizontal', 'vertical'],
-      targets: [0.25, 0.5, 0.75], targetCount: 3,
-      why: 'The crossed limbs of a cross mattress hold tension in two directions, which keeps an oblique wound on a moving flank from skewing while it closes.',
-      trap: 'A horizontal mattress pulls in one direction only; on an oblique wound under this much movement it tends to slide the edges past each other and leave a step.'
+      targets: [0.25, 0.5, 0.75],
+      why: 'The crossed limbs of a cross mattress hold tension in two directions, which keeps an oblique wound on a moving flank from skewing while it heals.',
+      trap: 'A horizontal mattress pulls in one direction only; on an oblique wound under this much movement it slides the edges past each other and leaves a step.'
     },
     {
-      id: 'c4', art: 'fascia', wound: 'line', length: 9,
-      title: 'Midline laparotomy — dog',
-      text: 'A 20 cm midline laparotomy in a 4-year-old Labrador after a splenectomy. The linea alba must be closed securely and quickly; the abdomen is clean and the dog is stable, but the operating list is running late and the surgeon is working alone.',
-      best: 'interlock', ok: ['interrupted'],
-      targets: [0.15, 0.4, 0.65, 0.9], targetCount: 4,
-      why: 'A continuous locked line closes a long fascial incision quickly, with one knot and even tension along its length. Small bites taken well into the linea alba matter in a dog that will be weight-bearing on the abdominal wall the day it wakes.',
-      trap: 'Interrupted sutures are secure but slow on a 20 cm line. A continuous unlocked line is faster still, but can loosen along its length and let the omentum through.'
+      id: 'c6', species: 'cattle', scene: 'flank', wound: 'line',
+      title: 'Skin closure after a left-flank caesarean',
+      patient: 'Holstein heifer · 2 years', site: 'Left flank · 30 cm incision', seen: 'Standing, under local anaesthesia',
+      text: 'The calf is out and the uterus and muscle layers are closed. The skin incision is long and the hide is thick; the heifer is standing, and the closure has to be quick and strong and keep its tension along the whole line as she moves.',
+      best: 'interlock', ok: ['interrupted', 'horizontal'],
+      targets: [0.15, 0.4, 0.65, 0.9],
+      why: 'A continuous interlocking line (the Ford interlocking pattern) is the classic skin closure for a bovine flank: fast on a long incision, with every loop locked so the tension cannot slip along the line as the animal moves.',
+      trap: 'Interrupted stitches are secure but slow on 30 cm of thick hide with a standing heifer. An unlocked continuous line is quicker still, but it loosens along its length.'
     },
     {
-      id: 'c5', art: 'bowel', wound: 'line', length: 3,
-      title: 'Small bowel enterotomy — dog',
-      text: 'A 2 cm enterotomy in the jejunum of a 6-year-old terrier after removing a linear foreign body. The lumen is only about 2 cm across and the wall is oedematous, and the closure must be watertight without narrowing it.',
+      id: 'c7', species: 'dog', scene: 'bowel', wound: 'line',
+      title: 'Small-bowel enterotomy',
+      patient: 'Jack Russell terrier · 6 years · male', site: 'Jejunum · 2 cm enterotomy', seen: 'During surgery, after removing a foreign body',
+      text: 'The lumen is only about 2 cm across and the wall is oedematous. The closure has to be watertight without narrowing the bowel.',
       best: 'lembert', ok: ['cushing'],
-      targets: [0.35, 0.65], targetCount: 2,
-      why: 'Interrupted Lembert bites invert the edges so serosa meets serosa, stay out of the lumen, and can be placed exactly where they are needed in short, small-calibre bowel.',
+      targets: [0.35, 0.65],
+      why: 'Interrupted Lembert bites invert the edges so serosa meets serosa, stay out of the lumen, and can be placed exactly where they are needed on short, narrow bowel.',
       trap: 'A continuous inverting line (Cushing) can narrow a 2 cm lumen and leave the dog vomiting after an otherwise good surgery. Interrupted bites let you check the calibre as you go.'
     },
     {
-      id: 'c6', art: 'stomach', wound: 'line', length: 8,
-      title: 'Gastrotomy — dog',
-      text: 'An 8 cm gastrotomy incision in a 3-year-old spaniel after removing a foreign body. The stomach wall is thick and well vascularised, the lumen is spacious, and the closure must invert the edges along the whole length in one layer.',
+      id: 'c8', species: 'dog', scene: 'stomach', wound: 'line',
+      title: 'Gastrotomy',
+      patient: 'Springer spaniel · 3 years · male', site: 'Stomach · 8 cm incision', seen: 'During surgery, after removing a foreign body',
+      text: 'The stomach wall is thick and well supplied with blood, the lumen is spacious, and the closure has to turn the edges in along the whole length.',
       best: 'cushing', ok: ['lembert'],
-      targets: [0.2, 0.45, 0.7, 0.92], targetCount: 4,
-      why: 'Cushing runs a continuous inverting seromuscular line with bites parallel to the incision: fast, even and watertight on a thick, spacious organ such as the stomach.',
-      trap: 'Interrupted Lembert stitches would also invert the wall but take far longer on 8 cm of stomach, and every extra knot is more material in a contaminated field.'
+      targets: [0.2, 0.45, 0.7, 0.92],
+      why: 'A Cushing runs a continuous inverting line with its bites parallel to the incision, staying out of the lumen: fast, even and watertight on a thick, spacious organ such as the stomach.',
+      trap: 'Interrupted Lembert stitches would also invert the wall, but they take far longer on 8 cm of stomach, and every extra knot is more material in a contaminated field.'
     },
     {
-      id: 'c7', art: 'round', wound: 'round', length: 0,
-      title: 'Thoracic drain site — dog',
-      text: 'A 12 mm thoracic drain is pulled from a dog recovering from pneumothorax. The round defect must close snugly the moment the drain leaves, with no air leak and no dead space, and the skin must not pucker into a star that the dog will lick.',
+      id: 'c9', species: 'cattle', scene: 'uterus', wound: 'line',
+      title: 'Closing the uterus at a caesarean',
+      patient: 'Belgian Blue cow · 5 years', site: 'Uterus · 35 cm incision', seen: 'Calf delivered through the left flank',
+      text: 'The uterus has been lifted out through the flank. The incision runs along its greater curvature, the wall is thick and already starting to contract, and the closure has to be watertight, inverting and quick.',
+      best: 'cushing', ok: ['lembert'],
+      targets: [0.2, 0.45, 0.7, 0.92],
+      why: 'A continuous inverting pattern such as the Cushing closes a long uterine incision quickly, turns the cut edges in so serosa meets serosa, and keeps the thread out of the lumen, which reduces adhesions.',
+      trap: 'Interrupted Lembert stitches would invert the wall too, but on 35 cm of contracting uterus they take far too long. Everted edges, or bites through into the lumen, invite adhesions and leakage.'
+    },
+    {
+      id: 'c10', species: 'sheep', scene: 'anus', wound: 'round',
+      title: 'Holding a rectal prolapse in',
+      patient: 'Suffolk ewe lamb · 4 months', site: 'Anus · after reducing the prolapse', seen: 'Under an epidural',
+      text: 'The prolapsed rectum has been cleaned, checked for damage and pushed back. It has to be held in for about a week while the swelling settles, without stopping the lamb from passing faeces.',
       best: 'purse', ok: [],
-      targets: [0.5], targetCount: 1,
-      why: 'A purse-string gathers a round opening evenly from all sides with one thread, so the defect is closed around the drain and shut the instant it is withdrawn.',
-      trap: 'Interrupted stitches around a circle leave corners between them, which is exactly where air leaks and the wound reopens.'
+      targets: [0.5],
+      why: 'A purse-string round the anus, tied over a finger or a syringe case, holds the rectum in while leaving an opening for faeces. It comes out after five to seven days.',
+      trap: 'Tied completely shut, the anus cannot pass faeces and the lamb strains, which pushes the prolapse straight back out. Stitches across the anus would close it entirely.'
     }
   ];
 
@@ -863,7 +990,9 @@ window.SUTURE = (function () {
 
   /* ---------------- multiple-choice quiz ----------------
      The first option is always the right one: the quiz shuffles them. `see` is the
-     technique tab (or 'materials') that teaches the answer. */
+     technique tab (or 'materials') that teaches the answer. `hint` is only for a
+     question that leans on something the site does not teach: it gives the missing
+     fact, small, under the question, without giving the answer away. */
   const QUIZ = [
     /* patterns */
     { topic: 'Patterns', see: 'interrupted',
@@ -906,6 +1035,14 @@ window.SUTURE = (function () {
       q: 'What is the main weakness of any continuous line?',
       opts: ['If the strand breaks or a knot fails, the whole line can loosen', 'It needs one knot per stitch', 'It is slower than interrupted stitches', 'It cannot be used on skin'],
       why: 'One strand carries every stitch. Interrupted stitches cost more time and more knots, but they fail one at a time.' },
+    { topic: 'Patterns', see: 'intradermal',
+      q: 'What sets an intradermal (subcuticular) closure apart from the other skin patterns?',
+      opts: ['Every bite stays under the surface, so no stitch shows and nothing needs removing', 'It holds more tension than any mattress pattern', 'Each stitch is tied on its own', 'It everts the edges more than a vertical mattress'],
+      why: 'The bites run in the dermis, parallel to the skin, and the knots are buried. Nothing crosses the surface: nothing to lick, and with an absorbable thread nothing to remove.' },
+    { topic: 'Patterns', see: 'intradermal',
+      q: 'When is an intradermal closure a poor choice?',
+      opts: ['A contaminated wound that may need to drain', 'A clean spay incision', 'A cat that licks at its stitches', 'An owner who cannot come back for suture removal'],
+      why: 'A buried continuous line cannot be partly opened to let a wound drain, and it carries little tension. It suits clean, low-tension incisions.' },
 
     /* hollow organs and the purse-string */
     { topic: 'Hollow organs', see: 'lembert',
@@ -922,6 +1059,7 @@ window.SUTURE = (function () {
       why: 'Both are inverting and stay out of the lumen. A Lembert bite crosses the incision; a Cushing bite runs along each edge and the strand crosses over between bites.' },
     { topic: 'Hollow organs', see: 'cushing',
       q: 'How does a Cushing pattern differ from a Connell?',
+      hint: 'The Connell isn’t taught in the atlas: it is another continuous inverting pattern used to close hollow organs.',
       opts: ['The Cushing stays out of the lumen; the Connell passes through it', 'The Cushing is interrupted; the Connell is continuous', 'The Cushing everts; the Connell inverts', 'There is no difference'],
       why: 'Both are continuous and inverting, with bites parallel to the incision, but the Connell takes full-thickness bites into the lumen. The Cushing stays in the outer layers of the wall.' },
     { topic: 'Hollow organs', see: 'lembert',
@@ -1026,6 +1164,7 @@ window.SUTURE = (function () {
       why: 'Finer thread for thinner skin: 4-0 to 5-0 in cats, 3-0 to 4-0 in dogs, 2-0 to 3-0 on a horse’s limb.' },
     { topic: 'Species', see: 'interrupted',
       q: 'A large, contaminated wound on a horse’s lower limb. What often heals it best?',
+      hint: 'Healing by second intention means the wound is left open and fills in from the bottom with granulation tissue, instead of being stitched shut.',
       opts: ['Second-intention healing, rather than closing it', 'A purse-string', 'Closing it tightly with a continuous interlock', 'Stitches left in for at least six weeks'],
       why: 'The distal limb has little spare skin and a poor blood supply, and contaminated wounds there often break down when closed. Many heal better left open to granulate.' }
   ];

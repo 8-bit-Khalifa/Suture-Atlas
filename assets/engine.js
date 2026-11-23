@@ -479,7 +479,7 @@ window.SutureLab = (function () {
     }
 
     /* ---------- needle arcs ---------- */
-    function makeArc(a, b, R) {
+    function makeArc(a, b, R, bend) {
       const out = { a: a.clone(), b: b.clone(), pts: [], delta: 0, r: 1, c: new V3(), e1: new V3(1, 0, 0), e2: new V3(0, 1, 0) };
       const chord = new V3().subVectors(b, a);
       const len = chord.length();
@@ -495,6 +495,10 @@ window.SutureLab = (function () {
         perp = inw.addScaledVector(u, -inw.dot(u));
         if (perp.length() < 0.02) perp.set(0, 0, 1);
       }
+      /* A bite can be told which way to bulge: an intradermal bite swings out into
+         the dermis, sideways and a little down, instead of diving under the wound;
+         the rest of the needle's circle then stands up in the open wound. */
+      if (bend) perp = bend.clone().addScaledVector(u, -bend.dot(u));
       perp.normalize();
       const half = len / 2;
       /* A sag of half the chord is the degenerate case: the chord becomes a
@@ -546,7 +550,7 @@ window.SutureLab = (function () {
           return { A: surf('C', a0, 0, 0), B: surf('C', a1, 0, 0) };
         }
         const s2 = ps.toR ? 'R' : ps.toL ? 'L' : ps.side;
-        return { A: surf(ps.side, ps.a[0], ps.a[1], ps.a[2]), B: surf(s2, ps.b[0], ps.b[1], ps.b[2]) };
+        return { A: surf(ps.side, ps.a[0], ps.a[1], ps.a[2]), B: surf(s2, ps.b[0], ps.b[1], ps.b[2]), side: ps.side };
       });
       let widest = 0;
       ends.forEach(e => { widest = Math.max(widest, e.A.distanceTo(e.B)); });
@@ -554,14 +558,20 @@ window.SutureLab = (function () {
          a bit shorter than the needle's diameter. One radius for the whole technique
          also means the needle no longer changes size from bite to bite. */
       cur.R = tech.radius || Math.max(2.4, widest * 0.68);
-      arcs = ends.map(e => makeArc(e.A, e.B, cur.R));
+      /* a technique whose bites run in the dermis (intradermal) bends each bite out
+         into its own side of the wound */
+      const dermal = tech.bitePlane === 'dermal';
+      arcs = ends.map(e => makeArc(e.A, e.B, cur.R,
+        dermal && e.side ? new V3(e.side === 'L' ? -0.6 : 0.6, -0.8, 0) : null));
       // knot + tails
       if (tissue.type === 'linear') {
         K = surf(tech.knot[0], tech.knot[1], tech.knot[2], tech.knot[3]);
         const first = tech.passes[0], last = tech.passes[tech.passes.length - 1];
         const endSide = last.toL ? 'L' : last.toR ? 'R' : last.side;
-        tailStart = surf(first.side, tech.tailU, -0.8, first.a[2]);
-        tailEnd = surf(endSide, tech.endU, -0.8, last.b[2]);
+        /* the ends lie on the skin, or under it where the knots are buried */
+        const tailD = tech.tailD != null ? tech.tailD : -0.8;
+        tailStart = surf(first.side, tech.tailU, tailD, first.a[2]);
+        tailEnd = surf(endSide, tech.endU, tailD, last.b[2]);
       } else {
         const last = 14 + (tech.ring.bites - 1) * (360 / tech.ring.bites) + tech.ring.arc;
         tailStart = surf('C', 14 - 16, -1.4, 0);
@@ -617,7 +627,8 @@ window.SutureLab = (function () {
         }
         return;
       }
-      const lift = Math.min(3.2, 0.3 * dist + 0.85);
+      /* a buried line (intradermal) crosses the wound under the skin, not over it */
+      const lift = tech.buried ? -0.25 : Math.min(3.2, 0.3 * dist + 0.85);
       const mid = new V3().addVectors(a, b).multiplyScalar(.5);
       mid.y += lift;
       for (let i = 1; i <= 8; i++) {
@@ -651,7 +662,10 @@ window.SutureLab = (function () {
           it * it * a.y + 2 * it * t * (mid.y - d) + t * t * b.y,
           it * it * a.z + 2 * it * t * mid.z + t * t * b.z
         );
-        if (cur && tissue.type !== 'round') p.y = Math.max(p.y, skinY(p.x, p.z) + 0.2);
+        /* kept on the skin - unless both ends are buried, as at an intradermal line's
+           buried knots, where the strand stays under the skin with them */
+        const buried = tech && tech.buried && a.y < 0 && b.y < 0;
+        if (cur && tissue.type !== 'round' && !buried) p.y = Math.max(p.y, skinY(p.x, p.z) + 0.2);
         pts.push(p);
       }
       return pts;
@@ -2343,6 +2357,7 @@ window.SutureLab = (function () {
       if (base.knot) c.knot = [base.knot[0], +(base.knot[1] * k).toFixed(2), base.knot[2], base.knot[3]];
       if (base.tailU != null) c.tailU = +(base.tailU * k).toFixed(2);
       if (base.endU != null) c.endU = +(base.endU * k).toFixed(2);
+      if (base.tailD != null) c.tailD = +(base.tailD * k).toFixed(2);
       c.steps = base.steps.map(s => s.marks ? Object.assign({}, s, {
         marks: s.marks.map(mk => Array.isArray(mk.at)
           ? Object.assign({}, mk, { at: [mk.at[0], +(mk.at[1] * k).toFixed(2), +(mk.at[2] * k).toFixed(2), mk.at[3]] })

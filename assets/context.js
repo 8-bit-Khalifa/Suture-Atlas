@@ -26,12 +26,13 @@ window.SutureContext = (function () {
   /* ---------------- which site for which technique ---------------- */
   const BY_TECH = {
     interrupted: ['limb'], lembert: ['bowel'], horizontal: ['fascia'], cross: ['joint'],
-    vertical: ['flank'], interlock: ['linea'], cushing: ['uterus'], purse: ['anus', 'stomach']
+    vertical: ['flank'], interlock: ['linea'], intradermal: ['belly'], cushing: ['uterus'], purse: ['anus', 'stomach']
   };
   const SITES = {
     limb: { name: 'skin laceration on a forelimb', label: 'Forelimb skin', make: k => skinSite(k, 'limb') },
     joint: { name: 'loose skin over the elbow', label: 'Elbow skin', make: k => skinSite(k, 'joint') },
     flank: { name: 'flank skin under tension', label: 'Flank skin', make: k => skinSite(k, 'flank') },
+    belly: { name: 'belly skin, closing a spay incision', label: 'Belly skin', make: k => skinSite(k, 'belly') },
     fascia: { name: 'abdominal wall fascia (external rectus sheath)', label: 'Abdominal fascia', make: k => abdomenSite(k, false) },
     linea: { name: 'linea alba, laparotomy closure', label: 'Linea alba', make: k => abdomenSite(k, true) },
     bowel: { name: 'small intestine, enterotomy closure', label: 'Small intestine', make: k => tubeSite(k, 'bowel') },
@@ -295,7 +296,9 @@ window.SutureContext = (function () {
     const P = {
       limb: { W: 54, H: 94, q: 0.46, L: 210, clipA: 18, clipZ: 30, drapeY: -98, wide: 1.55 },
       joint: { W: 54, H: 94, q: 0.46, L: 150, clipA: 18, clipZ: 26, drapeY: -170, wide: 1.6 },
-      flank: { W: 120, H: 180, q: 0.5, L: 260, clipA: 30, clipZ: 42, drapeY: -186, wide: 1.6 }
+      flank: { W: 120, H: 180, q: 0.5, L: 260, clipA: 30, clipZ: 42, drapeY: -186, wide: 1.6 },
+      /* the belly, animal on its back: a wide clipped field round a midline incision */
+      belly: { W: 120, H: 170, q: 0.5, L: 260, clipA: 44, clipZ: 62, drapeY: -176, wide: 1.6 }
     }[kind];
     const W = P.W * sz, H = P.H * sz;
     const loop = loafLoop(X, W, H, P.q, 22, 18, 20);
@@ -326,7 +329,8 @@ window.SutureContext = (function () {
     };
     const coatAt = q => kind === 'flank'
       ? mix(scl(K.coat, 0.78), scl(K.coat, 1.18), smooth(-90 * sz, 90 * sz, q.x))   /* darker along the back */
-      : K.coat;
+      : kind === 'belly' ? mix(K.coat, [1, 0.97, 0.92], 0.35)                    /* the belly's paler coat */
+        : K.coat;
     const geo = sweep(K, () => loop, zs, {
       frame,
       hole: (i, j) => i >= loop.iR && i < loop.iL && j >= j0 && j < j1,
@@ -335,6 +339,20 @@ window.SutureContext = (function () {
     });
     K.mesh(geo, skinMat(K));
     drapePlane(K, P.drapeY * sz);
+    /* a bitch or queen has two rows of teats down the belly, inside the clipped field */
+    if (kind === 'belly' && (K.sp.id === 'dog' || K.sp.id === 'cat')) {
+      const T3 = K.T3, nipMat = K.M({ color: 0xa96f66, roughness: 0.7 });
+      [-1, 1].forEach(sg => {
+        let q = loop[0];
+        loop.forEach(p => { if (Math.abs(p.x - sg * 46 * sz) < Math.abs(q.x - sg * 46 * sz) && p.y > -40) q = p; });
+        [-96, -48, 0, 48, 96].forEach(z => {
+          const g = new T3.SphereGeometry(1, 14, 10);
+          g.scale(2.2 * sz, 1.3, 2.2 * sz);
+          g.translate(q.x, q.y + 0.2, z);
+          K.mesh(g, nipMat);
+        });
+      });
+    }
 
     /* the cut face: the skin's own layers carried round the limb, then what lies inside */
     const inner = [];
@@ -347,6 +365,7 @@ window.SutureContext = (function () {
       inner.push({ poly: circlePoly(0, -T - 17 * sz, 11 * sz), c: BONE });
       extra = [{ n: 'Bone (elbow)', c: BONE }];
     } else {
+      /* flank or belly: the body wall, with loops of bowel in the cavity beneath */
       core = { c: 0x6e3440, sc: 0x9a6a72 };
       [[-28, -34, 10], [6, -52, 11], [36, -30, 9], [-8, -84, 12], [30, -76, 10]].forEach(([x, y, r]) =>
         inner.push({ poly: circlePoly(x * sz, -T + y * sz, r * sz), c: 0xc98f86, sc: 0xdcb0a8 }));

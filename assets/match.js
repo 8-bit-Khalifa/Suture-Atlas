@@ -21,19 +21,28 @@
     return b;
   };
 
+  const SPECIES = D.SPECIES || [];
+  const speciesName = id => { const s = SPECIES.find(x => x.id === id); return s ? s.name : id; };
+  $('#scoreMax').textContent = sites.length;
+
+  /* the patterns in the atlas's own order, each with its drawing; the wounds shuffled,
+     each with the same picture the case test uses */
   function render() {
-    const srcs = sites.map(s => TECHS.find(t => t.id === s.tech)).filter(Boolean);
-    sutureCol.innerHTML = '<h3>Suture technique</h3>' + srcs.map(t =>
+    const srcs = TECHS.filter(t => sites.some(s => s.tech === t.id));
+    sutureCol.innerHTML = '<h3>Pattern</h3>' + srcs.map(t =>
       '<button class="pill src" data-tech="' + t.id + '" aria-pressed="false">' +
-      '<span class="dot" aria-hidden="true"></span>' + t.name + '</button>'
+      '<svg data-kind="' + t.draw + '" aria-hidden="true"></svg><span>' + t.name + '<small>' + t.group + '</small></span></button>'
     ).join('');
-    siteCol.innerHTML = '<h3>Tissue / organ</h3>' + shuffle(sites).map(s =>
+    siteCol.innerHTML = '<h3>Wound</h3>' + shuffle(sites).map(s =>
       '<button class="site" data-site="' + s.id + '" data-tech="' + s.tech + '">' +
-      '<svg data-art="' + s.art + '" aria-hidden="true"></svg>' +
-      '<b>' + s.name + '</b><span>' + s.sub + '</span>' +
-      '<span class="why"></span></button>'
+      '<svg data-scene="' + s.scene + '" data-species="' + s.species + '" aria-hidden="true"></svg>' +
+      '<span class="txt"><span class="sp sp-' + s.species + '">' + speciesName(s.species) + '</span>' +
+      '<b>' + s.name + '</b><span class="sub">' + s.sub + '</span>' +
+      '<span class="why"></span></span></button>'
     ).join('');
-    siteCol.querySelectorAll('svg[data-art]').forEach(svg => StitchSVG.siteArt(svg, svg.dataset.art));
+    sutureCol.querySelectorAll('svg[data-kind]').forEach(svg =>
+      StitchSVG.draw(svg, svg.dataset.kind, { organ: svg.dataset.kind === 'lembert' || svg.dataset.kind === 'cushing' }));
+    siteCol.querySelectorAll('svg[data-scene]').forEach(svg => window.SutureScenes.draw(svg, svg.dataset.scene, svg.dataset.species));
     bind();
     drawWires();
   }
@@ -54,6 +63,13 @@
         dragPoint = { x: e.clientX, y: e.clientY };
         try { board.setPointerCapture(e.pointerId); } catch (err) { }
         e.preventDefault();
+      });
+      /* a click, or Enter or Space from the keyboard, picks the pattern too */
+      p.addEventListener('click', () => {
+        if (p.classList.contains('done')) return;
+        select(p);
+        feedback.textContent = TECHS.find(t => t.id === p.dataset.tech).name + ' picked: now choose its wound.';
+        feedback.style.color = 'var(--accent)';
       });
     });
     var downOnSite = null;
@@ -120,7 +136,7 @@
       siteEl.querySelector('.why').textContent = t.bestFor;
       pairs.push({ tech: techId, site: siteId, el: siteEl });
       selected = null;
-      feedback.textContent = 'Connected. ' + t.name + ' — ' + t.bestFor;
+      feedback.textContent = 'Matched: ' + t.name + '.';
       feedback.style.color = 'var(--good)';
       updateScore();
       drawWires();
@@ -129,7 +145,7 @@
       misses++;
       siteEl.classList.add('miss');
       setTimeout(() => siteEl.classList.remove('miss'), 420);
-      feedback.textContent = 'That strand does not belong there. Look at the tissue and ask what the stitch has to do to the edges.';
+      feedback.textContent = 'That pattern does not belong there. Look at the wound and ask what the stitch has to do to the edges.';
       feedback.style.color = 'var(--bad)';
       missNum.textContent = misses + (misses === 1 ? ' miss' : ' misses');
       selected = null;
@@ -193,24 +209,27 @@
   function finish() {
     const score = Math.max(0, Math.round((pairs.length / sites.length) * 100) - misses * 4);
     donePanel.hidden = false;
-    $('#doneTitle').textContent = 'All eight connected — ' + Math.max(0, score) + '%';
+    $('#doneTitle').textContent = Math.max(0, score) + '% — ' + (misses === 0 ? 'no wrong pairings' : misses + (misses === 1 ? ' wrong pairing' : ' wrong pairings'));
     $('#doneText').textContent = misses === 0
-      ? 'No wrong connections. Move on to the case test, where you also have to place the stitches yourself.'
-      : misses + (misses === 1 ? ' wrong connection' : ' wrong connections') + '. Read the reason under each card — that is the part that gets asked in vivas.';
+      ? 'Move on to the case test, where you also place the stitches yourself.'
+      : 'Read the reason on each wound: the why is the part that gets asked in vivas.';
     $('#doneList').innerHTML = sites.map(s => {
       const t = TECHS.find(x => x.id === s.tech);
-      return '<div><b>' + s.name + '</b> → ' + t.name +
-        '<p class="small muted" style="margin-top:4px">' + t.bestFor + '</p></div>';
+      return '<li><span class="sp sp-' + s.species + '">' + speciesName(s.species) + '</span>' +
+        '<span class="t"><b>' + s.name + '</b><small>' + t.name + '</small></span>' +
+        '<a class="s small" href="atlas.html#' + t.id + '">Watch →</a></li>';
     }).join('');
     donePanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  resetBtn.addEventListener('click', () => {
+  function restart() {
     pairs = []; misses = 0; selected = null; dragPoint = null;
     donePanel.hidden = true;
     feedback.textContent = '';
     render(); updateScore();
-  });
+  }
+  resetBtn.addEventListener('click', restart);
+  $('#againBtn').addEventListener('click', () => { restart(); board.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   window.addEventListener('resize', () => { if (board.getBoundingClientRect().width) drawWires(); });
 
   bindBoard();

@@ -85,6 +85,7 @@
       (i ? '<span class="muted small qscore">' + right + ' of ' + i + ' correct so far</span>' : '') + '</div>' +
       '<div class="bar2 qprog" aria-hidden="true"><i style="width:' + Math.round(i / deck.length * 100) + '%"></i></div>' +
       '<p class="qtext" id="qtext">' + esc(q.q) + '</p>' +
+      (q.hint ? '<p class="qhint"><span class="qhint-k">Hint</span><span>' + esc(q.hint) + '</span></p>' : '') +
       '<div class="qopts" role="group" aria-labelledby="qtext">' + d.order.map((k, n) =>
         '<button class="opt" data-k="' + k + '"><span class="k">' + LET[n] + '</span><span>' + esc(q.opts[k]) + '</span></button>').join('') +
       '</div><div id="qfb" aria-live="polite"></div></div>';

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Connect the stitch — Suture Atlas</title>
-<meta name="description" content="Match each suturing technique to the tissue it belongs to: skin, fascia, bowel, stomach, a round drain site.">
+<title>Match the stitch — Suture Atlas</title>
+<meta name="description" content="Match each of nine suture patterns to the wound it closes best, in dogs, cats, a horse, sheep and cattle.">
 <link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 </head>
@@ -29,36 +29,38 @@
   </nav>
 </header>
 
-<main class="wrap narrow" style="max-width:1000px">
-  <p class="eyebrow">Exercise 01</p>
-  <h1 style="margin-top:8px">Connect the stitch to its tissue</h1>
+<main class="wrap" style="max-width:1080px">
+  <p class="eyebrow">Drill · match the pattern to the wound</p>
+  <h1 class="serif matchTitle">Which stitch closes which wound?</h1>
   <p class="lede" style="margin-top:12px;font-size:16px">
-    Drag a strand from a technique to the site where it is the best choice. Each site needs exactly one
-    stitch; each stitch belongs to one site. Thread it wrong and it lets go.
+    Nine wounds, nine patterns, one best pairing each. Drag a pattern onto the wound it closes best,
+    or click the pattern and then the wound. A wrong pairing lets go.
   </p>
 
   <div class="scorebar">
-    <span><b class="big" id="scoreNum">0</b> <span class="muted small">/ 8 connected</span></span>
+    <span><b class="big" id="scoreNum">0</b> <span class="muted small">/ <span id="scoreMax">9</span> matched</span></span>
     <span class="muted small" id="missNum">0 misses</span>
     <span style="margin-left:auto"><button class="btn sm" id="resetBtn">Start over</button></span>
   </div>
 
-  <p class="small" id="feedback" aria-live="polite" style="min-height:22px;color:var(--accent);font-weight:600"></p>
+  <p class="small matchFeedback" id="feedback" aria-live="polite"></p>
 
-  <div class="match-board" id="board" style="margin-top:8px">
+  <div class="match-board" id="board">
     <svg class="wires" id="wires" aria-hidden="true"></svg>
-    <div class="match-col" id="sutureCol"><h3>Suture technique</h3></div>
+    <div class="match-col" id="sutureCol"><h3>Pattern</h3></div>
     <div class="wire"></div>
-    <div class="match-col" id="siteCol"><h3>Tissue / organ</h3></div>
+    <div class="match-col" id="siteCol"><h3>Wound</h3></div>
   </div>
 
   <div id="donePanel" hidden style="margin-top:22px">
-    <div class="card">
-      <h3 id="doneTitle"></h3>
+    <div class="card matchDone">
+      <p class="eyebrow">All matched</p>
+      <h2 class="serif" id="doneTitle"></h2>
       <p class="small muted" id="doneText" style="margin-top:6px"></p>
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:14px" id="doneList"></div>
-      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+      <ol class="caseList" id="doneList"></ol>
+      <div class="caseBtns">
         <a class="btn primary" href="test.html">Now try the case test →</a>
+        <button class="btn" id="againBtn">Match them again</button>
         <a class="btn" href="atlas.html">Back to the technique lab</a>
       </div>
     </div>
@@ -66,20 +68,21 @@
 
   <div class="banner" style="margin-top:22px">
     <span aria-hidden="true">ⓘ</span>
-    <span>One “best” answer per site, but real surgery allows alternatives. The reason appears under each card once you connect it.</span>
+    <span>One best answer per wound, though real surgery often allows alternatives. The reason appears on each wound once you match it, and the case test asks you to place the stitches too.</span>
   </div>
 </main>
 
 <footer class="foot">
   <div class="in">
     <span>Suture Atlas — an educational project. Stylised anatomy; verify all details with your own texts and teachers.</span>
-    <span>Found a bug? Contact me at <a href="tel:01003041896">01003041896</a></span>
+    <span>Found a bug? Message me on <a href="https://wa.me/201003041896?text=Hi%2C%20I%20found%20a%20bug%20in%20Suture%20Atlas%3A%20" target="_blank" rel="noopener">WhatsApp: 01003041896</a></span>
     <span><a href="index.html">Home</a> · <a href="atlas.html">Techniques</a> · <a href="test.html">Test</a> · <a href="materials.html">Materials</a></span>
   </div>
 </footer>
 
 <script src="assets/data.js"></script>
 <script src="assets/stitch.js"></script>
+<script src="assets/scenes.js"></script>
 <script src="assets/match.js"></script>
 </body>
 </html>

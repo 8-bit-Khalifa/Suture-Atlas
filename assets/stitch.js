@@ -47,6 +47,23 @@ window.StitchSVG = (function () {
       'stroke-linecap': 'round', fill: 'none'
     }));
     const arc = (d) => root.appendChild(el('path', { d, fill: 'none', stroke: col, 'stroke-width': 2.1, 'stroke-linecap': 'round' }));
+    if (kind === 'intradermal') {
+      /* Buried: bites along each edge just under the skin, crossing straight over
+         between them, drawn dashed because none of it shows on the surface; the
+         buried knots at the two ends are hollow. */
+      const xs = (positions || [0.32, 0.5, 0.68]).map(px);
+      const x0 = Math.min.apply(null, xs) - 8, x1 = Math.max.apply(null, xs) + 8;
+      const k = Math.max(4, xs.length * 2 - 1), step = (x1 - x0) / k;
+      let d = '';
+      for (let i = 0; i < k; i++) {
+        const y = W.mid + (i % 2 ? 3.4 : -3.4), xa = x0 + i * step - (i ? 0.8 : 0), xb = x0 + (i + 1) * step;
+        d += (i ? ' L' : 'M') + xa.toFixed(1) + ' ' + y + ' L' + xb.toFixed(1) + ' ' + y;
+      }
+      root.appendChild(el('path', { d, fill: 'none', stroke: col, 'stroke-width': 1.8, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-dasharray': '2.6 1.6' }));
+      [[x0, W.mid - 3.4], [x1, W.mid + ((k - 1) % 2 ? 3.4 : -3.4)]].forEach(([x, y]) =>
+        root.appendChild(el('circle', { cx: x, cy: y, r: 1.8, fill: 'none', stroke: col, 'stroke-width': 1.2 })));
+      return;
+    }
     (positions || [0.35, 0.65]).forEach((pos, i) => {
       const x = px(pos);
       if (kind === 'interrupted') {

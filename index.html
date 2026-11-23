@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Suture Atlas — learn the stitch before you pick up the needle</title>
-<meta name="description" content="Eight basic suture patterns and the surgical knot for veterinary students: 3D animations of every step, a matching drill, seven patient cases and a multiple-choice quiz.">
+<meta name="description" content="Nine basic suture patterns and the surgical knot for veterinary students: 3D animations of every step, a matching drill, eleven patient cases and a multiple-choice quiz.">
 <link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 </head>
@@ -38,7 +38,7 @@
       <p class="eyebrow">Suturing for veterinary students · dogs, cats, horses, sheep and cattle</p>
       <h1 id="homeTitle">Learn the stitch <em>before</em> you pick up the needle.</h1>
       <p class="drape-lede">
-        Eight suture patterns and the surgical knot, animated in 3D so you can pause, turn and cut
+        Nine suture patterns and the surgical knot, animated in 3D so you can pause, turn and cut
         through every step. Then test yourself on <span data-n="cases">7</span> patient cases and
         <span data-n="quiz">38</span> multiple-choice questions.
       </p>
@@ -100,9 +100,10 @@
       <h2 class="serif" id="bugTitle">Found a bug?</h2>
       <p class="muted">A step that’s wrong, a stitch that passes through the skin, a typo in a question — tell me and I’ll fix it.</p>
     </div>
-    <a class="bugs-call" href="tel:01003041896">
-      <span class="lbl">Contact me at</span>
-      <span class="num">01003041896</span>
+    <a class="bugs-call" href="https://wa.me/201003041896?text=Hi%2C%20I%20found%20a%20bug%20in%20Suture%20Atlas%3A%20" target="_blank" rel="noopener">
+      <span class="lbl">Message me on WhatsApp</span>
+      <span class="num"><svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2a8.6 8.6 0 0 0-7.4 13l-1.1 4 4.1-1.1A8.6 8.6 0 1 0 12 3.2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.6c.3-.6.7-.6 1-.6l.6 1.5c.1.3 0 .5-.2.7l-.4.5c.6 1.2 1.6 2.1 2.8 2.7l.5-.5c.2-.2.4-.2.7-.1l1.5.7c0 .4 0 .9-.6 1.2-.6.4-1.6.4-3.3-.6-1.6-1-2.8-2.4-3.4-3.8-.3-.8-.1-1.4.4-1.7Z" fill="currentColor"/></svg>01003041896</span>
+      <span class="lbl">Opens a chat with the message started</span>
     </a>
   </section>
 
@@ -111,7 +112,7 @@
 <footer class="foot">
   <div class="in">
     <span>Suture Atlas — an educational project. Stylised anatomy; verify all details with your own texts and teachers.</span>
-    <span>Found a bug? Contact me at <a href="tel:01003041896">01003041896</a></span>
+    <span>Found a bug? Message me on <a href="https://wa.me/201003041896?text=Hi%2C%20I%20found%20a%20bug%20in%20Suture%20Atlas%3A%20" target="_blank" rel="noopener">WhatsApp: 01003041896</a></span>
     <span><a href="atlas.html">Techniques</a> · <a href="match.html">Match</a> · <a href="test.html">Test</a> · <a href="materials.html">Materials</a></span>
   </div>
 </footer>
@@ -128,7 +129,7 @@
   /* where each pattern's stitches cross its incision, 0..1 along it */
   const AT = {
     interrupted: [0.22, 0.5, 0.78], horizontal: [0.3, 0.7], cross: [0.3, 0.7], vertical: [0.24, 0.5, 0.76],
-    interlock: [0.16, 0.4, 0.64], lembert: [0.24, 0.5, 0.76], cushing: [0.33, 0.67], purse: [0.5]
+    interlock: [0.16, 0.4, 0.64], intradermal: [0.24, 0.5, 0.76], lembert: [0.24, 0.5, 0.76], cushing: [0.33, 0.67], purse: [0.5]
   };
   /* One incision in the pad, closed with the technique's own pattern: a dark cut,
      the thread's shadow on the silicone, then the thread itself, sewn in on load. */
