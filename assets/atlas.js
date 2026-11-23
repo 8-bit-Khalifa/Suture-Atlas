@@ -10,9 +10,13 @@
   const stepsBtn = $('#stepsBtn');
   const playBtn = $('#playBtn'), seekEl = $('#seek'), timeEl = $('#time'), speedEl = $('#speed');
   const autoBtn = $('#autoBtn'), seeBtn = $('#seeBtn'), viewsEl = $('#views');
-  const motionBtn = $('#motionBtn'), mdBtn = $('#mdBtn');
   const speciesBar = $('#speciesBar'), speciesNote = $('#speciesNote');
+  const ctxBtn = $('#ctxBtn'), siteVar = $('#siteVar'), siteTag = $('#siteTag');
   const SPECIES = D.SPECIES || [];
+  /* what the engine last said about the organ view (the anatomical context) */
+  let ctxInfo = null;
+
+  const stageEl = $('#stage');
 
   const VIEWS = [
     { k: '3d', n: '3D' },
@@ -66,10 +70,33 @@
     });
     stepIdx = 0;
     applySteps(0, true);
-    legendEl.innerHTML = t.tissue.layers.map(l =>
-      '<span><i style="background:#' + l.c.toString(16).padStart(6, '0') + '"></i>' + l.n + '</span>'
-    ).join('') + '<span><i style="background:#2f6fcf;border-radius:6px;height:4px;width:16px;border:0"></i>Suture</span>' +
-      '<span><i style="background:#e4ebf2;border-radius:50%;border:0"></i>Needle</span>';
+    renderLegend(t);
+  }
+
+  /* In the organ view the layers carry the site's names, and the organ's own parts are added */
+  function renderLegend(t) {
+    const on = !!(ctxInfo && ctxInfo.on);
+    const sw = l => '<span><i style="background:#' + l.c.toString(16).padStart(6, '0') + '"></i>' + l.n + '</span>';
+    const layers = on && ctxInfo.layers ? ctxInfo.layers : t.tissue.layers;
+    /* the knot tab has no needle in it */
+    legendEl.innerHTML = layers.map(sw).join('') +
+      '<span><i style="background:#2f6fcf;border-radius:6px;height:4px;width:16px;border:0"></i>Suture</span>' +
+      (t.tie ? '' : '<span><i style="background:#e4ebf2;border-radius:50%;border:0"></i>Needle</span>') +
+      (on ? ctxInfo.extra.map(sw).join('') : '');
+  }
+
+  function markContext() {
+    const info = ctxInfo, avail = !!(info && info.available), on = !!(info && info.on);
+    ctxBtn.disabled = !avail;
+    ctxBtn.setAttribute('aria-pressed', String(on));
+    ctxBtn.title = avail ? 'Show the stitch on the organ it is used on; switch off to see the plain tissue block'
+      : 'The knot has no organ of its own: it is tied the same way wherever the stitch is';
+    siteTag.hidden = !on;
+    siteTag.textContent = on ? info.caption : '';
+    const multi = on && info.sites.length > 1;
+    siteVar.hidden = !multi;
+    siteVar.innerHTML = multi ? '<span class="lbl">Site</span>' + info.sites.map(s =>
+      '<button class="btn sm" data-site="' + s.id + '" aria-pressed="' + (s.id === info.site) + '">' + s.label + '</button>').join('') : '';
   }
 
   function applySteps(i, instant) {
@@ -85,6 +112,20 @@
         }
       }
     });
+    keepInView(instant);
+  }
+
+  /* Beside the player the list scrolls inside its own column: bring the step being
+     played into view there, moving the list only and never the page. */
+  function keepInView(instant) {
+    const cur = stepList.querySelector('li.cur');
+    if (!cur || stepList.scrollHeight <= stepList.clientHeight + 1) return;
+    const top = cur.offsetTop - stepList.offsetTop;
+    const bottom = top + cur.offsetHeight;
+    let to = null;
+    if (top < stepList.scrollTop) to = top;
+    else if (bottom > stepList.scrollTop + stepList.clientHeight) to = Math.min(top, bottom - stepList.clientHeight);
+    if (to != null) stepList.scrollTo({ top: to, behavior: instant ? 'auto' : 'smooth' });
   }
 
   stepsBtn.addEventListener('click', () => {
@@ -123,48 +164,63 @@
   }
 
   /* ---- engine ---- */
-  const lab = window.SutureLab ? window.SutureLab.mount($('#stage'), {
-    startWith: (location.hash || '').replace('#', '') || TECHS[0].id,
+  const clamp01 = x => Math.min(1, Math.max(0, x || 0));
+  function showTime(t, total, l, playing) {
+    if (document.activeElement !== seekEl) seekEl.value = Math.round(total ? (t / total) * 1000 : 0);
+    timeEl.textContent = fmt(t) + ' / ' + fmt(total);
+    playBtn.textContent = playing ? 'Pause' : (t >= total - 0.02 ? 'Replay' : 'Play');
+    const bar = stepList.querySelector('li.cur .bar i');
+    if (bar) bar.style.width = Math.round(clamp01(l) * 100) + '%';
+  }
+
+  const lab = window.SutureLab ? window.SutureLab.mount(stageEl, {
+    startWith: current,
     hud: $('#hud'),
     annLayer: $('#annLayer'),
     onStep: i => {
       stepIdx = i;
       applySteps(i);
     },
-    onTime: (t, total, i, l, playing) => {
-      if (document.activeElement !== seekEl) seekEl.value = Math.round(total ? (t / total) * 1000 : 0);
-      timeEl.textContent = fmt(t) + ' / ' + fmt(total);
-      playBtn.textContent = playing ? 'Pause' : (t >= total - 0.02 ? 'Replay' : 'Play');
-      const bar = stepList.querySelector('li.cur .bar i');
-      if (bar) bar.style.width = Math.round(l * 100) + '%';
-    },
+    onTime: (t, total, i, l, playing) => showTime(t, total, l, playing),
     onAuto: v => autoBtn.setAttribute('aria-pressed', String(!!v)),
-    onView: markView
+    onView: markView,
+    onContext: info => {
+      ctxInfo = info;
+      markContext();
+      renderLegend(TECHS.find(x => x.id === current) || TECHS[0]);
+    }
   }) : null;
+  if (!lab) ctxBtn.disabled = true;
 
   function fmt(v) {
     v = Math.max(0, v || 0);
     return Math.floor(v / 60) + ':' + String(Math.floor(v % 60)).padStart(2, '0');
   }
 
+  /* the knot has its own entry in the top menu: mark that one on the knot tab */
+  function markNav(id) {
+    document.querySelectorAll('.mainnav a').forEach(a => {
+      const href = a.getAttribute('href');
+      const on = id === 'knot' ? href === 'atlas.html#knot' : href === 'atlas.html';
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+  }
+
   function loadTech(id) {
     const t = TECHS.find(x => x.id === id) || TECHS[0];
     current = t.id;
+    markNav(t.id);
     tabsEl.querySelectorAll('button').forEach(b =>
       b.setAttribute('aria-selected', String(b.dataset.id === t.id)));
     buildRail(t);
     buildInfo(t);
-    /* keep the query string: `?motion=continuous` has to survive a change of tab */
+    /* keep the query string: `?species=cat` has to survive a change of tab */
     if (history.replaceState) history.replaceState(null, '', location.pathname + location.search + '#' + t.id);
-    if (lab) {
-      lab.load(t.id);
-    } else {
-      document.querySelectorAll('#stepList li')[0]?.classList.add('cur');
-    }
+    if (lab) lab.load(t.id);
+    else document.querySelectorAll('#stepList li')[0]?.classList.add('cur');
     autoBtn.setAttribute('aria-pressed', 'true');
     if (lab) {
       seeBtn.setAttribute('aria-pressed', String(lab.seeThrough));
-      markMotion(lab.motionMode);
       markSpecies(lab.species);
     }
     markView('3d');
@@ -193,22 +249,19 @@
     putParam('species', b.dataset.species === 'dog' ? null : b.dataset.species);
   });
 
-  /* ---- before/after movement model ---- */
-  function markMotion(m) {
-    const after = m === 'continuous';
-    motionBtn.textContent = after ? 'Movement: after' : 'Movement: before';
-    motionBtn.setAttribute('aria-pressed', String(after));
-    mdBtn.setAttribute('aria-pressed', String(m === 'md'));
-  }
-  /* Each button toggles its own model; pressing it again returns to the plain arc. */
-  function toggleMotion(mode) {
+  /* ---- anatomical context ---- */
+  ctxBtn.addEventListener('click', () => {
     if (!lab) return;
-    const m = lab.setMotion(lab.motionMode === mode ? 'arc' : mode);
-    markMotion(m);
-    putParam('motion', m === 'arc' ? null : m);
-  }
-  motionBtn.addEventListener('click', () => toggleMotion('continuous'));
-  mdBtn.addEventListener('click', () => toggleMotion('md'));
+    const on = !(ctxInfo && ctxInfo.on);
+    lab.setContext(on);
+    putParam('scene', on ? null : 'block');
+  });
+  siteVar.addEventListener('click', e => {
+    const b = e.target.closest('button[data-site]');
+    if (!b || !lab) return;
+    const info = lab.setContext(true, b.dataset.site);
+    putParam('site', info.sites.length && b.dataset.site === info.sites[0].id ? null : b.dataset.site);
+  });
 
   /* ---- controls ---- */
   seeBtn.addEventListener('click', () => {

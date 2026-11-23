@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Surgical knot — Suture Atlas</title>
+<meta name="description" content="A step-by-step 3D lesson in the instrument-tied surgeon’s knot: two colour-coded strands, two instruments, a vertical skin incision, and the double first throw that holds it closed.">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e7a63'/%3E%3Cpath d='M7 24C12 19 13 11 21 8' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="index.html">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M4 27C10 21 11 11 20 7c3-1.4 6-1.2 8-0.6" stroke="#0e7a63" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M6 11c7 1 14 6 20 15" stroke="#2f6fcf" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-dasharray="3 3"/>
+    </svg>
+    <span>Suture Atlas<small>Interactive technique lab</small></span>
+  </a>
+  <nav class="mainnav">
+    <a href="atlas.html">Techniques</a>
+    <a href="knot.html" aria-current="page">Knot lesson</a>
+    <a href="match.html">Match</a>
+    <a href="test.html">Test</a>
+    <a href="materials.html">Materials</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <p class="eyebrow">Lesson · surgical knot · instrument tie</p>
+  <h1 style="margin-top:8px">The surgeon’s knot, tied with two instruments</h1>
+  <p class="lede" style="margin-top:12px;max-width:78ch">
+    One vertical incision, two instruments, two colour-coded ends. The blue strand is the
+    long working strand; the yellow is the short free tail. Watch the blue one do the work,
+    and watch where the yellow one goes — the whole knot depends on that.
+  </p>
+
+  <section class="lab">
+    <div>
+      <div class="stage knot" id="knotStage" aria-label="3D animation of an instrument-tied knot">
+        <div class="hud" id="knotHud">1 / 5 · Position the strands</div>
+        <div class="hint">fixed 45° teaching view</div>
+      </div>
+
+      <div class="controls">
+        <div class="row">
+          <button class="btn primary" id="kPlay" aria-pressed="true">Pause</button>
+        </div>
+        <div class="seek">
+          <input type="range" id="kSeek" min="0" max="1000" value="0" aria-label="Lesson time">
+          <span class="time" id="kTime">0:00 / 0:35</span>
+        </div>
+        <div class="row" style="margin-left:auto">
+          <button class="btn sm" id="kPrev" title="Previous step">‹ Step</button>
+          <button class="btn sm" id="kNext" title="Next step">Step ›</button>
+          <select id="kSpeed" aria-label="Speed">
+            <option value="0.6">0.6×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.4">1.4×</option>
+          </select>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:#2f6fcf"></i>Blue — long working strand</span>
+        <span><i style="background:#d8b12a"></i>Yellow — short free tail</span>
+        <span><i style="background:#0e7a63;border-radius:50%"></i>Arrow — direction of the wrap</span>
+      </div>
+      <p class="note" style="margin-top:8px">The camera stays at one top-down 45° angle throughout, so the position of each strand can be compared between steps. The lesson holds for a second at the end of every step.</p>
+    </div>
+
+    <aside class="rail">
+      <h2>The five steps</h2>
+      <p class="tag">Click a step to jump to it.</p>
+      <ol class="steps" id="kSteps"></ol>
+      <div class="card" style="margin-top:14px">
+        <h3>What makes it hold</h3>
+        <ul class="small">
+          <li><b>Two wraps first.</b> The extra friction of a double first throw holds the wound closed while the second throw is prepared — this is what makes it a surgeon’s knot rather than a plain one.</li>
+          <li><b>Reverse the second throw.</b> The same direction twice gives a granny knot, which slides as the wound swells.</li>
+          <li><b>Pull along the wound line, evenly.</b> Both strands the same distance in opposite directions; stop when the edges meet, not when the skin blanches.</li>
+          <li><b>Regrasp close to the knot</b> for every throw. The nearer the grip, the finer the control of tension.</li>
+        </ul>
+      </div>
+    </aside>
+  </section>
+
+  <div class="banner" style="margin-top:26px">
+    <span aria-hidden="true">ⓘ</span>
+    <span><b>Teaching model, not anatomy.</b> The tissue is a diagram of a skin incision drawn to scale in millimetres; instruments are simplified. The sequence and the tension rules are the teaching point.</span>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="assets/knot.js"></script>
+<script>
+(function () {
+  'use strict';
+  var stage = document.querySelector('#knotStage');
+  var playBtn = document.querySelector('#kPlay'), seekEl = document.querySelector('#kSeek');
+  var timeEl = document.querySelector('#kTime'), speedEl = document.querySelector('#kSpeed');
+  var stepsEl = document.querySelector('#kSteps'), hud = document.querySelector('#knotHud');
+
+  var lab = window.KnotLab.mount(stage, {
+    onStep: function (i, p) {
+      hud.textContent = (i + 1) + ' / 5 · ' + p.label;
+      var items = stepsEl.querySelectorAll('li');
+      for (var k = 0; k < items.length; k++) items[k].classList.toggle('cur', k === i);
+    },
+    onTime: function (t, total, ph, playing) {
+      if (document.activeElement !== seekEl) seekEl.value = Math.round(total ? (t / total) * 1000 : 0);
+      timeEl.textContent = fmt(t) + ' / ' + fmt(total);
+      playBtn.textContent = playing ? 'Pause' : (t >= total - 0.05 ? 'Replay' : 'Play');
+    }
+  });
+
+  function fmt(v) {
+    v = Math.max(0, v || 0);
+    return Math.floor(v / 60) + ':' + String(Math.floor(v % 60)).padStart(2, '0');
+  }
+
+  stepsEl.innerHTML = window.KnotLab.PHASES.map(function (p) {
+    return '<li><button type="button"><span class="st">' + p.label + '</span>' +
+      '<span class="sb">' + p.text + '</span></button></li>';
+  }).join('');
+  stepsEl.addEventListener('click', function (e) {
+    var b = e.target.closest('li');
+    if (!b || !lab) return;
+    lab.seekStep(Array.prototype.indexOf.call(stepsEl.children, b));
+    playBtn.textContent = 'Pause';
+  });
+
+  playBtn.addEventListener('click', function () { lab && lab.toggle(); });
+  seekEl.addEventListener('input', function () { lab && lab.seek((+seekEl.value / 1000) * lab.total); });
+  speedEl.addEventListener('change', function () { lab && lab.setSpeed(+speedEl.value); });
+  document.querySelector('#kNext').addEventListener('click', function () {
+    if (!lab) return;
+    var i = Math.min(4, currentStep() + 1);
+    lab.seekStep(i); playBtn.textContent = 'Pause';
+  });
+  document.querySelector('#kPrev').addEventListener('click', function () {
+    if (!lab) return;
+    var i = Math.max(0, currentStep() - 1);
+    lab.seekStep(i); playBtn.textContent = 'Pause';
+  });
+  function currentStep() {
+    var cur = stepsEl.querySelector('li.cur');
+    return cur ? Array.prototype.indexOf.call(stepsEl.children, cur) : 0;
+  }
+})();
+</script>
+</body>
+</html>

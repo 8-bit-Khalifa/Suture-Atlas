@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Suture Atlas: an S drawn as a suture. The top of the S is a curved needle, point
+       first; at the swage its blue thread takes over and draws the bottom. On the drape. -->
+  <rect width="32" height="32" rx="8" fill="#1d4b55"/>
+  <g transform="translate(16 16) scale(.84) translate(-16 -16.4)">
+    <path d="M16 15.6C19.5 16.5 23 18 23 21.5C23 25 19.5 27 15.5 27C12 27 9.5 25.6 8 23.5" fill="none" stroke="#a9c6ff" stroke-width="2.3" stroke-linecap="round"/>
+    <path d="M24 8.5C22 6 19.5 5 16.5 5C12 5 9 7.2 9 10C9 13.5 13 14.8 16 15.6" fill="none" stroke="#eef5f4" stroke-width="3" stroke-linecap="butt"/>
+    <path d="M22.7 9.6L26.6 12L25.3 7.4Z" fill="#eef5f4"/>
+  </g>
+</svg>

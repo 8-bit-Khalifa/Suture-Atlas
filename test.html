@@ -3,23 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Case test — Suture Atlas</title>
-<meta name="description" content="Seven veterinary wound cases in dogs, cats and a horse: choose the best suture, then place the stitches yourself. Scored on the decision and the placement.">
+<title>Test yourself — Suture Atlas</title>
+<meta name="description" content="Seven veterinary wound cases in dogs, cats and a horse — choose the best suture, then place the stitches yourself — and a multiple-choice quiz on patterns, knots, needles and suture materials.">
 <link rel="stylesheet" href="assets/site.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e7a63'/%3E%3Cpath d='M7 24C12 19 13 11 21 8' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 </head>
 <body>
 
 <header class="top">
   <a class="brand" href="index.html">
+    <!-- the mark: an S drawn as a suture, a curved needle that hands on to its thread -->
     <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
-      <path d="M4 27C10 21 11 11 20 7c3-1.4 6-1.2 8-0.6" stroke="#0e7a63" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-      <path d="M6 11c7 1 14 6 20 15" stroke="#2f6fcf" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-dasharray="3 3"/>
+      <path class="thread" d="M16 15.6C19.5 16.5 23 18 23 21.5C23 25 19.5 27 15.5 27C12 27 9.5 25.6 8 23.5"/>
+      <path class="needle" d="M24 8.5C22 6 19.5 5 16.5 5C12 5 9 7.2 9 10C9 13.5 13 14.8 16 15.6"/>
+      <path class="tip" d="M22.7 9.6L26.6 12L25.3 7.4Z"/>
     </svg>
     <span>Suture Atlas<small>Interactive technique lab</small></span>
   </a>
   <nav class="mainnav">
     <a href="atlas.html">Techniques</a>
+    <a href="atlas.html#knot">Surgical knot</a>
     <a href="match.html">Match</a>
     <a href="test.html" aria-current="page">Test</a>
     <a href="materials.html">Materials</a>
@@ -27,25 +30,42 @@
 </header>
 
 <main class="wrap narrow">
-  <p class="eyebrow">Exercise 02</p>
-  <h1 style="margin-top:8px">The case test</h1>
-  <p class="lede" style="margin-top:12px;font-size:16px">
-    Seven patients — dogs, a cat and a horse. For each one: pick the technique you would use, then show
-    where the stitches go. Sixty points for the decision, forty for the placement — and a reason for every
-    case, right or wrong.
-  </p>
+  <p class="eyebrow">Test yourself</p>
+  <h1 style="margin-top:8px">Check what you know</h1>
 
-  <div id="testRoot" style="margin-top:22px"></div>
-
-  <div class="banner" style="margin-top:26px">
-    <span aria-hidden="true">ⓘ</span>
-    <span><b>How scoring works.</b> 60 points for the best technique (32 for an acceptable alternative), 40 points for stitches placed within the marked zone. Nothing is saved or sent anywhere; reload to start again.</span>
+  <div class="tabs testTabs" role="tablist" aria-label="Kind of test">
+    <button role="tab" id="tabCases" aria-controls="casesPane" aria-selected="true" data-mode="cases">Case test · 7 patients</button>
+    <button role="tab" id="tabQuiz" aria-controls="quizPane" aria-selected="false" data-mode="quiz">Multiple choice · <span data-count="quiz">37</span> questions</button>
   </div>
+
+  <section id="casesPane" role="tabpanel" aria-labelledby="tabCases">
+    <p class="lede" style="margin-top:12px;font-size:16px">
+      Seven patients — dogs, a cat and a horse. For each one: pick the technique you would use, then show
+      where the stitches go. Sixty points for the decision, forty for the placement — and a reason for every
+      case, right or wrong.
+    </p>
+
+    <div id="testRoot" style="margin-top:22px"></div>
+
+    <div class="banner" style="margin-top:26px">
+      <span aria-hidden="true">ⓘ</span>
+      <span><b>How scoring works.</b> 60 points for the best technique (32 for an acceptable alternative), 40 points for stitches placed within the marked zone. Nothing is saved or sent anywhere; reload to start again.</span>
+    </div>
+  </section>
+
+  <section id="quizPane" role="tabpanel" aria-labelledby="tabQuiz" hidden>
+    <p class="lede" style="margin-top:12px;font-size:16px">
+      Questions on the patterns, hollow organs, knots, needles, suture materials and species differences
+      taught in the atlas. One at a time, with the reason for every answer.
+    </p>
+    <div id="quizRoot" style="margin-top:22px;scroll-margin-top:16px"></div>
+  </section>
 </main>
 
 <footer class="foot">
   <div class="in">
     <span>Suture Atlas — an educational project. Stylised anatomy; verify all details with your own texts and teachers.</span>
+    <span>Found a bug? Contact me at <a href="tel:01003041896">01003041896</a></span>
     <span><a href="index.html">Home</a> · <a href="atlas.html">Techniques</a> · <a href="match.html">Match</a> · <a href="materials.html">Materials</a></span>
   </div>
 </footer>
@@ -53,5 +73,6 @@
 <script src="assets/data.js"></script>
 <script src="assets/stitch.js"></script>
 <script src="assets/test.js"></script>
+<script src="assets/quiz.js"></script>
 </body>
 </html>
