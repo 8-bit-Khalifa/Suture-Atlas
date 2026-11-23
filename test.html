@@ -1,12 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Test yourself — Suture Atlas</title>
-<meta name="description" content="Eleven veterinary cases in dogs, cats, a horse, sheep and cattle — choose the best suture pattern, then place the stitches yourself — and a multiple-choice quiz on patterns, knots, needles and suture materials.">
+<meta name="description" content="Twelve veterinary cases in dogs, cats, a horse, sheep and cattle — choose the best suture pattern, then place the stitches yourself — and a multiple-choice quiz on patterns, knots, needles and suture materials.">
 <link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Suture Atlas">
+<meta name="theme-color" content="#0b1211">
+<script>/* the theme chosen with the header button, applied before the page is drawn: dark unless light was picked */
+try{if(localStorage.getItem('suture-theme')==='light'){document.documentElement.dataset.theme='light';document.querySelector('meta[name="theme-color"]').content='#eef2f1'}}catch(e){}</script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Suture Atlas">
+<meta property="og:title" content="Test yourself — Suture Atlas">
+<meta property="og:description" content="Twelve veterinary cases in dogs, cats, a horse, sheep and cattle — choose the best suture pattern, then place the stitches yourself — and a multiple-choice quiz on patterns, knots, needles and suture materials.">
+<meta property="og:url" content="https://suture-atlas.pages.dev/test">
+<meta property="og:image" content="https://suture-atlas.pages.dev/assets/preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Suture Atlas: a practice pad with four suture patterns stitched in blue thread">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
 
@@ -27,6 +43,12 @@
     <a href="test.html" aria-current="page">Test</a>
     <a href="materials.html">Materials</a>
   </nav>
+  <button class="themeBtn" id="themeBtn" type="button" aria-label="Switch to light mode" title="Switch to light mode">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <g class="sun" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></g>
+      <path class="moon" d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+  </button>
 </header>
 
 <main class="wrap narrow">
@@ -40,7 +62,7 @@
 
   <section id="casesPane" role="tabpanel" aria-labelledby="tabCases">
     <p class="lede" style="margin-top:12px;font-size:16px">
-      Eleven patients: dogs, cats, a horse, sheep and cattle, from a torn thigh to a caesarean. Read each
+      Twelve patients: dogs, cats, a horse, sheep and cattle, from a torn thigh to a caesarean. Read each
       record, choose the pattern you would use, then place the stitches yourself. Sixty points for the
       decision, forty for the placement, and the reason for every case, right or wrong.
     </p>
@@ -65,7 +87,7 @@
 <footer class="foot">
   <div class="in">
     <span>Suture Atlas — an educational project. Stylised anatomy; verify all details with your own texts and teachers.</span>
-    <span>Found a bug? Message me on <a href="https://wa.me/201003041896?text=Hi%2C%20I%20found%20a%20bug%20in%20Suture%20Atlas%3A%20" target="_blank" rel="noopener">WhatsApp: 01003041896</a></span>
+    <span>Found a bug? Message me on <a href="#" data-wa target="_blank" rel="noopener">WhatsApp</a></span>
     <span><a href="index.html">Home</a> · <a href="atlas.html">Techniques</a> · <a href="match.html">Match</a> · <a href="materials.html">Materials</a></span>
   </div>
 </footer>
@@ -75,5 +97,6 @@
 <script src="assets/scenes.js"></script>
 <script src="assets/test.js"></script>
 <script src="assets/quiz.js"></script>
+<script src="assets/site.js"></script>
 </body>
 </html>

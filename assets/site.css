@@ -17,14 +17,14 @@
   /* the mark: a steel needle, a blue thread */
   --mark-steel:#1f3a42; --mark-thread:#2f6fcf;
 }
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:#0b1211; --panel:#131e1c; --ink:#e5eeeb; --mute:#93a6a0; --line:#26332f; --chip:#1b2724;
-    --accent:#4fbfa2; --accent-ink:#06251d; --accent-soft:#16302a;
-    --good:#54c78f; --warn:#e0a457; --bad:#e78977;
-    --stage:#0a1211;
-    --mark-steel:#dfe9ec; --mark-thread:#7aa6ff;
-  }
+/* Two themes. Dark is the default (every page opens with data-theme="dark" on <html>);
+   the button in the header switches to light and the choice is remembered. */
+:root[data-theme="dark"]{
+  --bg:#0b1211; --panel:#131e1c; --ink:#e5eeeb; --mute:#93a6a0; --line:#26332f; --chip:#1b2724;
+  --accent:#4fbfa2; --accent-ink:#06251d; --accent-soft:#16302a;
+  --good:#54c78f; --warn:#e0a457; --bad:#e78977;
+  --stage:#0a1211;
+  --mark-steel:#dfe9ec; --mark-thread:#7aa6ff;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -60,7 +60,26 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[t
 .brand .mark .tip{fill:var(--mark-steel)}
 .brand .mark .thread{fill:none;stroke:var(--mark-thread);stroke-width:2.4;stroke-linecap:round}
 .brand small{display:block;margin-top:2px;font:500 10.5px/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
-.mainnav{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto}
+.mainnav{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto;order:1}
+/* the theme switch: a sun in the dark theme (to go light), a moon in the light one */
+.themeBtn{
+  order:2;flex:none;display:grid;place-items:center;width:36px;height:36px;padding:0;
+  border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--mute)
+}
+.themeBtn:hover{background:var(--chip);color:var(--ink)}
+.themeBtn svg{width:18px;height:18px}
+.themeBtn .moon,[data-theme="light"] .themeBtn .sun{display:none}
+[data-theme="light"] .themeBtn .moon{display:block}
+/* switching: the icon turns over as it changes... */
+.themeBtn.turn svg{animation:themeTurn .7s cubic-bezier(.45,0,.2,1)}
+@keyframes themeTurn{from{transform:rotate(-180deg) scale(.4);opacity:0}to{transform:none;opacity:1}}
+/* ...while the new theme spreads from the button (site.js draws the circle), */
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+/* or, where that is not available, the colours cross-fade */
+.themeFade,.themeFade *,.themeFade *::before,.themeFade *::after{
+  transition:background-color .5s ease,color .5s ease,border-color .5s ease,fill .5s ease,stroke .5s ease,box-shadow .5s ease !important
+}
+@media (prefers-reduced-motion:reduce){.themeBtn.turn svg{animation:none}}
 .mainnav a{
   padding:7px 12px;border-radius:999px;font-size:14px;font-weight:550;color:var(--mute);
 }
@@ -69,6 +88,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[t
 @media (max-width:560px){
   .top{padding-bottom:10px;gap:8px}
   .mainnav{width:100%;margin-left:0;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}
+  /* on a phone the switch sits beside the wordmark, the menu runs underneath */
+  .themeBtn{order:0;margin-left:auto}
   .mainnav::-webkit-scrollbar{display:none}
   .mainnav a{padding:6px 10px;font-size:13.5px}
 }
@@ -117,7 +138,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:22px 0}
   --s1:#f5dccd; --s2:#e5a197; --s3:#eed08d; --s4:#c4747c;
   --thread-hi:#a9c6ff;
 }
-@media (prefers-color-scheme:dark){.home,.mat{--drape:#173f48;--drape-deep:#11313a}}
+[data-theme="dark"] .home,[data-theme="dark"] .mat{--drape:#173f48;--drape-deep:#11313a}
 .serif{font-family:var(--serif);font-weight:600;letter-spacing:-.005em}
 
 .drape{
@@ -162,9 +183,9 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:22px 0}
 .pad .nm{font-weight:650;font-size:13.5px;line-height:1.2}
 .pad .gp{font:500 10px/1.5 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(75,31,25,.62)}
 .padwrap figcaption{margin-top:4px;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--drape-mute);text-align:center}
-/* nine patterns in three rows of three, and the knot that finishes them all along the bottom */
-.pad a:last-child{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;padding-top:2px}
-.pad a:last-child svg{max-width:30%}
+/* ten patterns in rows of three, and the knot that finishes them all beside the last one */
+.pad a:last-child{grid-column:span 2;flex-direction:row;justify-content:center;gap:10px;padding-top:2px}
+.pad a:last-child svg{max-width:46%}
 .pad a:last-child .nm{align-self:center}
 .pad a:last-child .gp{align-self:center}
 @media (max-width:560px){
@@ -172,7 +193,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:22px 0}
   .pad a{padding:4px 3px 8px}
   .pad .nm{font-size:11.5px}
   .pad .gp{display:none}
-  .pad a:last-child svg{max-width:42%}
+  .pad a:last-child svg{max-width:50%}
 }
 /* the threads are sewn in as the page opens */
 .pad .sew{stroke-dasharray:1 2;stroke-dashoffset:1;animation:sew .65s cubic-bezier(.55,0,.25,1) forwards;animation-delay:var(--d)}
@@ -221,7 +242,7 @@ h2.serif{font-size:clamp(26px,3vw,36px)}
 .bugs-call .wa{width:.95em;height:.95em;flex:none}
 .bugs-call .lbl:last-child{text-transform:none;letter-spacing:0;font:400 12.5px var(--sans)}
 .bugs-call:hover .num{text-decoration:underline;text-underline-offset:4px}
-@media (prefers-color-scheme:dark){.bugs-call .num{color:var(--thread-hi)}}
+[data-theme="dark"] .bugs-call .num{color:var(--thread-hi)}
 @media (max-width:640px){.bugs{grid-template-columns:1fr;padding:20px}.bugs-call{justify-items:start}}
 
 /* ---------- atlas lab ---------- */
@@ -509,7 +530,7 @@ tbody tr:hover{background:var(--chip)}
   --hold:#0e7a63; --absorb:#73b9a5;              /* strength chart: one hue, two steps (validated) */
   --paper:#fbfaf6; --paper-ink:#1d2a2e; --paper-mute:#5d6b70; --paper-line:#dfe3e1;
 }
-@media (prefers-color-scheme:dark){.mat{--hold:#5cc9ac;--absorb:#2f6f61}}
+[data-theme="dark"] .mat{--hold:#5cc9ac;--absorb:#2f6f61}
 .mat-hero{grid-template-columns:minmax(0,4fr) minmax(0,8fr)}
 .mat-hero h1{font-size:clamp(34px,4vw,52px)}
 @media (max-width:980px){.mat-hero{grid-template-columns:1fr}}

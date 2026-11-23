@@ -26,7 +26,7 @@ window.SutureContext = (function () {
   /* ---------------- which site for which technique ---------------- */
   const BY_TECH = {
     interrupted: ['limb'], lembert: ['bowel'], horizontal: ['fascia'], cross: ['joint'],
-    vertical: ['flank'], interlock: ['linea'], intradermal: ['belly'], cushing: ['uterus'], purse: ['anus', 'stomach']
+    vertical: ['flank'], continuous: ['linea', 'belly'], interlock: ['linea'], intradermal: ['belly'], cushing: ['uterus'], purse: ['anus', 'stomach']
   };
   const SITES = {
     limb: { name: 'skin laceration on a forelimb', label: 'Forelimb skin', make: k => skinSite(k, 'limb') },

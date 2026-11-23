@@ -416,7 +416,70 @@ window.SUTURE = (function () {
       ]
     },
 
-    /* 5. CONTINUOUS INTERLOCK */
+    /* 5a. SIMPLE CONTINUOUS
+       The same run of bites as the interlock below, without the locks: every bite
+       goes straight across under the wound and the thread crosses over it at an
+       angle to the next one. Started with a tied stitch, finished on its last loop. */
+    {
+      id: 'continuous', name: 'Simple continuous', also: 'Running suture · continuous suture',
+      group: 'Continuous', tissue: SKIN, draw: 'continuous',
+      tagline: 'Linea alba, subcutis and long clean incisions · one thread, two knots',
+      bestFor: 'Long, clean incisions under even tension where speed matters — above all the linea alba after a laparotomy.',
+      indications: [
+        'The linea alba after a laparotomy in dogs and cats, and a ventral midline coeliotomy in horses and cattle',
+        'Subcutaneous tissue, to close dead space under the skin closure',
+        'Long, clean skin incisions under little tension, where time under anaesthesia matters',
+        'Hollow organs closed in a single appositional layer, such as the bladder, in absorbable monofilament'
+      ],
+      pros: [
+        'Fast: one thread and only two knots for the whole line',
+        'Spreads tension evenly along the whole wound',
+        'Little foreign material: two knots instead of one per stitch',
+        'Even apposition that seals well — watertight in a hollow organ'
+      ],
+      cons: [
+        'If the thread breaks or a knot fails, the whole line can open',
+        'Cannot be partly opened to let one part of the wound drain',
+        'Pulled too tight it gathers the wound like a drawstring',
+        'Nothing locks each bite, so it suits even tension, not a wound that gapes in one place'
+      ],
+      checklist: [
+        'Start with a simple interrupted stitch, tied, and cut only the short tail',
+        'Every bite at right angles to the wound; the thread crosses over it at an angle',
+        'Same distance from the edge and same spacing every time: 5–10 mm in fascia',
+        'Take up the slack after each bite, but never pull the line tight enough to blanch or pucker',
+        'Tie the free end to the last loop, with an extra throw: the whole line hangs on its knots'
+      ],
+      typical: ['pds', 'nylon', 'prolene'], possible: ['vicryl', 'monocryl'],
+      needle: 'Taper for the linea alba and hollow organs; cutting for skin',
+      needleWhy: 'Fascia and bowel are dense but not layered like skin: a taper point parts the fibres instead of cutting them, so the bite holds. Skin needs a cutting edge.',
+      size: '0 to 2-0 for the linea alba in a dog, 2-0 to 3-0 in a cat, 2 or heavier in a horse or cow; 3-0 to 4-0 for subcutis and skin',
+      passes: [
+        { side: 'L', a: [6, 0, -12], b: [6, 0, -12], sag: 6.7, toR: true },
+        { side: 'L', a: [6, 0, -4], b: [6, 0, -4], sag: 6.7, toR: true },
+        { side: 'L', a: [6, 0, 4], b: [6, 0, 4], sag: 6.7, toR: true },
+        { side: 'L', a: [6, 0, 12], b: [6, 0, 12], sag: 6.7, toR: true }
+      ],
+      tailU: 14, endU: 14, knot: ['R', 7, -1.2, 12], tie: TIE3_LOOP,
+      steps: [
+        { t: 'Anchor the line', cam: '3d', pass: 0,
+          b: 'Start with a simple interrupted stitch at one end of the wound, tie it, and cut only the short tail. The long end, still on the needle, runs the whole line.',
+          marks: [{ at: ['L', 6, 0, -12], label: 'Tied first stitch — keep the long end', dx: -170, dy: -34 }] },
+        { t: 'Cross over at an angle', cam: 'top', dur: 2.4,
+          b: 'The thread crosses the wound on the surface, slanting to where the next bite begins. Underneath, every bite runs straight across the wound; on top, the crossings slant. That is what a simple continuous line looks like.' },
+        { t: 'Next bite, straight across', cam: '3d', pass: 1,
+          b: 'Enter at the same distance from the edge and drive the needle straight across, at right angles to the wound, not along the slant of the thread. Bites that follow the slant pull the edges out of line.',
+          marks: [{ at: ['L', 6, 0, -4], label: 'Same distance out, at right angles', dx: -170, dy: -34 }] },
+        { t: 'Take up the slack as you go', cam: '3d', pass: 2,
+          b: 'After each bite the slack is drawn through so the line stays snug — an assistant can follow, holding the last crossing. Snug, not tight: a running line pulled hard gathers the wound like a drawstring.' },
+        { t: 'Continue to the end of the wound', cam: '3d', pass: 3,
+          b: 'Same depth and same spacing to the far end. Watch the thread on the needle: leave enough to tie off comfortably.' },
+        /* the line is finished by tying the needle end to its own last loop */
+        ...knotSteps({ loop: true })
+      ]
+    },
+
+    /* 5b. CONTINUOUS INTERLOCK */
     {
       id: 'interlock', name: 'Continuous interlock', also: 'Continuous locked · Ford interlocking',
       group: 'Continuous', tissue: SKIN, draw: 'interlock',
@@ -479,7 +542,7 @@ window.SUTURE = (function () {
       ]
     },
 
-    /* 5b. INTRADERMAL (SUBCUTICULAR)
+    /* 5c. INTRADERMAL (SUBCUTICULAR)
        A buried continuous line: every bite enters the dermis from inside the wound,
        runs parallel to the skin and comes back out into the wound, on alternate
        sides. `bitePlane: 'dermal'` makes the engine swing each bite out sideways into
@@ -836,6 +899,7 @@ window.SUTURE = (function () {
     { id: 'tension', tech: 'horizontal', species: 'dog', scene: 'tension', name: 'Skin under tension after a mass removal', sub: 'Flank; the edges roll inward' },
     { id: 'oblique', tech: 'cross', species: 'horse', scene: 'oblique', name: 'Oblique flank laceration', sub: 'Wire injury, pulled in two directions' },
     { id: 'gaping', tech: 'vertical', species: 'cat', scene: 'gaping', name: 'Gaping stifle wound', sub: 'Thin loose skin, dead space beneath' },
+    { id: 'linea', tech: 'continuous', species: 'dog', scene: 'linea', name: 'Linea alba after a laparotomy', sub: 'Long, even tension, closed quickly' },
     { id: 'flank', tech: 'interlock', species: 'cattle', scene: 'flank', name: 'Long flank incision, animal standing', sub: 'Skin closure after a caesarean' },
     { id: 'spay', tech: 'intradermal', species: 'cat', scene: 'belly', name: 'Spay incision in a cat that cannot be handled again', sub: 'Clean, no tension, nothing to remove' },
     { id: 'bowel', tech: 'lembert', species: 'dog', scene: 'bowel', name: 'Small-bowel enterotomy', sub: 'Serosa must meet serosa, a few bites' },
@@ -844,7 +908,7 @@ window.SUTURE = (function () {
   ];
 
   /* ---------------- case test ----------------
-     Eleven patients, every pattern at least once and every species at least once.
+     Twelve patients, every pattern at least once and every species at least once.
      `scene` is the picture (drawn in test.js); `targets` are where along the wound
      (0 to 1) the stitches of the best pattern cross it; `ok` are acceptable
      second choices, which score part of the decision points. */
@@ -914,10 +978,20 @@ window.SUTURE = (function () {
       title: 'Skin closure after a left-flank caesarean',
       patient: 'Holstein heifer · 2 years', site: 'Left flank · 30 cm incision', seen: 'Standing, under local anaesthesia',
       text: 'The calf is out and the uterus and muscle layers are closed. The skin incision is long and the hide is thick; the heifer is standing, and the closure has to be quick and strong and keep its tension along the whole line as she moves.',
-      best: 'interlock', ok: ['interrupted', 'horizontal'],
+      best: 'interlock', ok: ['interrupted', 'horizontal', 'continuous'],
       targets: [0.15, 0.4, 0.65, 0.9],
       why: 'A continuous interlocking line (the Ford interlocking pattern) is the classic skin closure for a bovine flank: fast on a long incision, with every loop locked so the tension cannot slip along the line as the animal moves.',
       trap: 'Interrupted stitches are secure but slow on 30 cm of thick hide with a standing heifer. An unlocked continuous line is quicker still, but it loosens along its length.'
+    },
+    {
+      id: 'c12', species: 'dog', scene: 'linea', wound: 'line',
+      title: 'Closing the linea alba',
+      patient: 'Boxer · 6 years · male, neutered', site: 'Ventral midline · 14 cm through the linea alba', seen: 'End of an exploratory laparotomy',
+      text: 'The abdomen has been explored and lavaged and the organs are back in place. The linea alba is the layer that holds the abdomen shut, and it is loaded every time the dog stands up, coughs or strains. The closure has to be strong, even along its whole length and quick.',
+      best: 'continuous', ok: ['interrupted', 'interlock'],
+      targets: [0.2, 0.4, 0.6, 0.8],
+      why: 'A simple continuous line in a slowly absorbed monofilament such as PDS is the usual closure of the linea alba: quick on a long incision, it spreads the load evenly along the whole line, and with secure knots at each end it holds as well as interrupted stitches while leaving less material in the wound.',
+      trap: 'Interrupted stitches are just as safe but slower, with a knot at every bite. A locked line adds bulk without adding strength. Whatever the pattern, each bite must take the firm external rectus sheath: a bite in fat alone pulls through, and that is how an incisional hernia starts.'
     },
     {
       id: 'c7', species: 'dog', scene: 'bowel', wound: 'line',
@@ -1027,6 +1101,14 @@ window.SUTURE = (function () {
       q: 'An oblique laceration gapes in two directions. Which pattern is designed for it?',
       opts: ['Cross mattress', 'Lembert', 'Purse-string', 'Cushing'],
       why: 'The X of a cross mattress holds tension from two angles, where a parallel mattress would pull an oblique wound out of line.' },
+    { topic: 'Patterns', see: 'continuous',
+      q: 'Seen from above, how does the thread of a simple continuous line lie?',
+      opts: ['It crosses the wound at a slant, while every bite underneath runs straight across', 'Straight across the wound at every bite, with a knot on each', 'In an X over the wound at each bite', 'Parallel to the wound, hidden under the skin'],
+      why: 'The needle is driven at right angles to the wound every time, so the thread has to slant over the top to reach the next bite. Bites that follow the slant pull the edges out of line.' },
+    { topic: 'Patterns', see: 'continuous',
+      q: 'Why is a simple continuous line the usual closure for the linea alba?',
+      opts: ['It is quick, spreads the load evenly along the incision and leaves little material behind', 'It can be partly removed if the wound becomes infected', 'Each bite is locked, so tension cannot slide along the line', 'It inverts the edges of the fascia'],
+      why: 'One strand and two knots close a long incision fast, and the tension shares out along the whole line. With secure knots and a slowly absorbed monofilament it holds as well as interrupted stitches.' },
     { topic: 'Patterns', see: 'interlock',
       q: 'In a continuous interlock, what do you do on every bite that a simple continuous line does not?',
       opts: ['Pass the needle through the loop just made before pulling tight', 'Tie a knot', 'Take a second, shallow bite', 'Reverse the direction of the bite'],

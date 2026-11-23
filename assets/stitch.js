@@ -64,6 +64,16 @@ window.StitchSVG = (function () {
         root.appendChild(el('circle', { cx: x, cy: y, r: 1.8, fill: 'none', stroke: col, 'stroke-width': 1.2 })));
       return;
     }
+    if (kind === 'continuous') {
+      /* Every bite runs straight across under the wound (drawn faint) and the thread
+         crosses back over it at a slant to the next one; tied at both ends. */
+      const xs = (positions || [0.32, 0.5, 0.68]).map(px);
+      xs.forEach(x => root.appendChild(el('path', { d: `M${x} ${W.y0} L${x} ${W.y1}`, stroke: col, 'stroke-width': 1.3, 'stroke-opacity': 0.4, 'stroke-linecap': 'round', fill: 'none' })));
+      xs.forEach((x, i) => { if (i < xs.length - 1) t(x, W.y1, xs[i + 1], W.y0); });
+      knot(root, xs[0], W.y0 - 1.5);
+      knot(root, xs[xs.length - 1], W.y1 + 1.5);
+      return;
+    }
     (positions || [0.35, 0.65]).forEach((pos, i) => {
       const x = px(pos);
       if (kind === 'interrupted') {

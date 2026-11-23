@@ -1,12 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Suture Atlas — learn the stitch before you pick up the needle</title>
-<meta name="description" content="Nine basic suture patterns and the surgical knot for veterinary students: 3D animations of every step, a matching drill, eleven patient cases and a multiple-choice quiz.">
+<meta name="description" content="Ten basic suture patterns and the surgical knot for veterinary students: 3D animations of every step, a matching drill, twelve patient cases and a multiple-choice quiz.">
 <link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Suture Atlas">
+<meta name="theme-color" content="#0b1211">
+<script>/* the theme chosen with the header button, applied before the page is drawn: dark unless light was picked */
+try{if(localStorage.getItem('suture-theme')==='light'){document.documentElement.dataset.theme='light';document.querySelector('meta[name="theme-color"]').content='#eef2f1'}}catch(e){}</script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Suture Atlas">
+<meta property="og:title" content="Suture Atlas — learn the stitch before you pick up the needle">
+<meta property="og:description" content="Ten basic suture patterns and the surgical knot for veterinary students: 3D animations of every step, a matching drill, twelve patient cases and a multiple-choice quiz.">
+<meta property="og:url" content="https://suture-atlas.pages.dev/">
+<meta property="og:image" content="https://suture-atlas.pages.dev/assets/preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Suture Atlas: a practice pad with four suture patterns stitched in blue thread">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body class="home">
 
@@ -27,6 +43,12 @@
     <a href="test.html">Test</a>
     <a href="materials.html">Materials</a>
   </nav>
+  <button class="themeBtn" id="themeBtn" type="button" aria-label="Switch to light mode" title="Switch to light mode">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <g class="sun" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></g>
+      <path class="moon" d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+  </button>
 </header>
 
 <main class="wrap">
@@ -38,7 +60,7 @@
       <p class="eyebrow">Suturing for veterinary students · dogs, cats, horses, sheep and cattle</p>
       <h1 id="homeTitle">Learn the stitch <em>before</em> you pick up the needle.</h1>
       <p class="drape-lede">
-        Nine suture patterns and the surgical knot, animated in 3D so you can pause, turn and cut
+        Ten suture patterns and the surgical knot, animated in 3D so you can pause, turn and cut
         through every step. Then test yourself on <span data-n="cases">7</span> patient cases and
         <span data-n="quiz">38</span> multiple-choice questions.
       </p>
@@ -92,7 +114,7 @@
 
   <section class="readfirst" aria-label="Before you use the atlas">
     <p><b>A study aid, not a protocol.</b> The anatomy is stylised and drawn at a readable scale. Suture choice, size and removal times vary with species, tissue and local policy, so check your own guidelines before treating an animal.</p>
-    <p class="muted">No accounts and no tracking: your scores stay in the browser tab, and the site works offline.</p>
+    <p class="muted">No accounts and no tracking: your scores stay in the browser tab. Open the site once and it keeps working with no internet; on a phone, add it to your home screen to use it like an app.</p>
   </section>
 
   <section class="bugs" aria-labelledby="bugTitle">
@@ -100,9 +122,9 @@
       <h2 class="serif" id="bugTitle">Found a bug?</h2>
       <p class="muted">A step that’s wrong, a stitch that passes through the skin, a typo in a question — tell me and I’ll fix it.</p>
     </div>
-    <a class="bugs-call" href="https://wa.me/201003041896?text=Hi%2C%20I%20found%20a%20bug%20in%20Suture%20Atlas%3A%20" target="_blank" rel="noopener">
-      <span class="lbl">Message me on WhatsApp</span>
-      <span class="num"><svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2a8.6 8.6 0 0 0-7.4 13l-1.1 4 4.1-1.1A8.6 8.6 0 1 0 12 3.2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.6c.3-.6.7-.6 1-.6l.6 1.5c.1.3 0 .5-.2.7l-.4.5c.6 1.2 1.6 2.1 2.8 2.7l.5-.5c.2-.2.4-.2.7-.1l1.5.7c0 .4 0 .9-.6 1.2-.6.4-1.6.4-3.3-.6-1.6-1-2.8-2.4-3.4-3.8-.3-.8-.1-1.4.4-1.7Z" fill="currentColor"/></svg>01003041896</span>
+    <a class="bugs-call" href="#" data-wa target="_blank" rel="noopener">
+      <span class="lbl">Message me on</span>
+      <span class="num"><svg class="wa" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2a8.6 8.6 0 0 0-7.4 13l-1.1 4 4.1-1.1A8.6 8.6 0 1 0 12 3.2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8.6c.3-.6.7-.6 1-.6l.6 1.5c.1.3 0 .5-.2.7l-.4.5c.6 1.2 1.6 2.1 2.8 2.7l.5-.5c.2-.2.4-.2.7-.1l1.5.7c0 .4 0 .9-.6 1.2-.6.4-1.6.4-3.3-.6-1.6-1-2.8-2.4-3.4-3.8-.3-.8-.1-1.4.4-1.7Z" fill="currentColor"/></svg>WhatsApp</span>
       <span class="lbl">Opens a chat with the message started</span>
     </a>
   </section>
@@ -112,7 +134,7 @@
 <footer class="foot">
   <div class="in">
     <span>Suture Atlas — an educational project. Stylised anatomy; verify all details with your own texts and teachers.</span>
-    <span>Found a bug? Message me on <a href="https://wa.me/201003041896?text=Hi%2C%20I%20found%20a%20bug%20in%20Suture%20Atlas%3A%20" target="_blank" rel="noopener">WhatsApp: 01003041896</a></span>
+    <span>Found a bug? Message me on <a href="#" data-wa target="_blank" rel="noopener">WhatsApp</a></span>
     <span><a href="atlas.html">Techniques</a> · <a href="match.html">Match</a> · <a href="test.html">Test</a> · <a href="materials.html">Materials</a></span>
   </div>
 </footer>
@@ -128,7 +150,7 @@
 
   /* where each pattern's stitches cross its incision, 0..1 along it */
   const AT = {
-    interrupted: [0.22, 0.5, 0.78], horizontal: [0.3, 0.7], cross: [0.3, 0.7], vertical: [0.24, 0.5, 0.76],
+    interrupted: [0.22, 0.5, 0.78], horizontal: [0.3, 0.7], cross: [0.3, 0.7], vertical: [0.24, 0.5, 0.76], continuous: [0.2, 0.4, 0.6, 0.8],
     interlock: [0.16, 0.4, 0.64], intradermal: [0.24, 0.5, 0.76], lembert: [0.24, 0.5, 0.76], cushing: [0.33, 0.67], purse: [0.5]
   };
   /* One incision in the pad, closed with the technique's own pattern: a dark cut,
@@ -183,5 +205,6 @@
   });
 })();
 </script>
+<script src="assets/site.js"></script>
 </body>
 </html>

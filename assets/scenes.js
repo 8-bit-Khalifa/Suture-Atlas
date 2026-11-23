@@ -116,6 +116,21 @@ window.SutureScenes = (function () {
       }
       incision(g);
     },
+    linea: g => {
+      /* a ventral midline laparotomy: the skin and fat held back, the white band of the
+         linea alba between the two rectus sheaths, opened along its length */
+      drape(g);
+      clipped(g, 3, 6, 94, 58, 91);
+      add(g, 'path', { d: 'M6 37 Q50 7 94 37 Q50 67 6 37 Z', fill: SKIN_D });
+      add(g, 'path', { d: 'M9 37 Q50 11 91 37 Q50 63 9 37 Z', fill: '#e9c86e' });
+      add(g, 'path', { d: 'M12 37 Q50 18 88 37 Q50 56 12 37 Z', fill: '#d9d2c4' });
+      [-1, 1].forEach(s => add(g, 'path', { d: `M18 ${37 + s * 3} Q50 ${37 + s * 15} 82 ${37 + s * 3}`, stroke: '#b9ad9a', 'stroke-width': 0.6, fill: 'none', opacity: 0.8 }));
+      add(g, 'path', { d: 'M12 37 Q50 30.5 88 37 Q50 43.5 12 37 Z', fill: '#f6f1e6' });
+      for (let x = 20; x < 82; x += 4) add(g, 'path', { d: `M${x} 35.6 l2.4 2.8`, stroke: '#d8cfbd', 'stroke-width': 0.45 });
+      /* the retractor blades at each side */
+      [[50, 10.5], [50, 63.5]].forEach(([x, y]) => add(g, 'rect', { x: x - 9, y: y - 2, width: 18, height: 4, rx: 1.4, fill: '#a9b4ba' }));
+      incision(g, { col: '#7d2f39' });
+    },
     bowel: g => {
       drape(g);
       /* the mesentery fanning down from the loop, with its vessels */
