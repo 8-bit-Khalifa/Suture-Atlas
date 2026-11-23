@@ -25,15 +25,26 @@ window.SutureLab = (function () {
       host.innerHTML = '<div class="nogl">This browser could not start 3D graphics. Try another browser or enable hardware acceleration.</div>';
       return null;
     }
-    /* Phones and tablets (a touch screen as the main pointer) get a lighter picture:
-       a little less pixel density, which their dense screens hide, and no shadows. */
+    /* Quality levels, sharpest first. Phones and tablets (a touch screen as the main
+       pointer) start at the third: a little less pixel density, which their dense
+       screens hide, and no shadows, which are a whole extra pass of the scene. While
+       the video plays the frame rate is measured: a device that cannot keep up steps
+       down a level at a time - never below the last, the floor under which the thin
+       suture thread starts to blur - and one with power to spare steps up. */
+    const QUAL = [
+      { ratio: 2, shadows: true },
+      { ratio: 1.75, shadows: true },
+      { ratio: 1.5, shadows: false },
+      { ratio: 1.25, shadows: false }
+    ];
     const LITE = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LITE ? 1.5 : 2));
+    const qStart = LITE ? 2 : 0;
+    let qLevel = qStart;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, QUAL[qLevel].ratio));
     renderer.localClippingEnabled = true;
     /* Soft shadows: instruments throw a real shadow across the wound, which is most
        of what makes them read as solid objects lying on the tissue. */
-    /* phones skip shadows altogether: a whole extra pass of the scene every frame */
-    renderer.shadowMap.enabled = !LITE;
+    renderer.shadowMap.enabled = QUAL[qLevel].shadows;
     renderer.shadowMap.type = LITE ? T3.PCFShadowMap : T3.PCFSoftShadowMap;
     host.insertBefore(renderer.domElement, host.firstChild);
 
@@ -44,7 +55,7 @@ window.SutureLab = (function () {
     renderer.toneMappingExposure = 0.94;
     scene.add(new T3.HemisphereLight(0xf2ece2, 0x2a2420, 0.34));
     const key = new T3.DirectionalLight(0xfff1de, 0.62); key.position.set(24, 40, 26); scene.add(key);
-    key.castShadow = !LITE;
+    key.castShadow = QUAL[qLevel].shadows;
     key.shadow.mapSize.set(LITE ? 512 : 1024, LITE ? 512 : 1024);
     key.shadow.camera.left = -46; key.shadow.camera.right = 46;
     key.shadow.camera.top = 46; key.shadow.camera.bottom = -46;
@@ -2537,6 +2548,43 @@ window.SutureLab = (function () {
       /* a few more frames after the last change, so everything has caught up */
       return ++idleFrames > 4;
     }
+
+    /* ---------- automatic quality ----------
+       Measured over two seconds of playback at a time. Below 28 frames a second the
+       picture steps down a level; a level that failed is never tried again. Above 55
+       for three windows running it steps up a level - past where it started too, so a
+       fast phone earns shadows and full sharpness, up to the top level.
+       Frames from a hidden or stalled page (gaps over 0.2 s) are not counted, so a
+       background tab never drags the quality down. */
+    const qm = { frames: 0, time: 0, cool: 1.5, fast: 0, failed: [] };
+    function applyQuality(i) {
+      qLevel = i;
+      const Q = QUAL[i];
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, Q.ratio));
+      if (renderer.shadowMap.enabled !== Q.shadows) {
+        renderer.shadowMap.enabled = Q.shadows;
+        key.castShadow = Q.shadows;
+        scene.traverse(n => { if (n.material) [].concat(n.material).forEach(m => { m.needsUpdate = true; }); });
+      }
+      resize();
+      lastSig = '';
+    }
+    function measureQuality(raw) {
+      if (document.visibilityState !== 'visible' || !(raw > 0) || raw > 0.2) { qm.frames = 0; qm.time = 0; return; }
+      if (qm.cool > 0) { qm.cool -= raw; return; }
+      qm.frames++; qm.time += raw;
+      if (qm.time < 2) return;
+      const fps = qm.frames / qm.time;
+      qm.frames = 0; qm.time = 0; qm.lastFps = fps;
+      if (fps < 28 && qLevel < QUAL.length - 1) {
+        qm.failed[qLevel] = true;
+        applyQuality(qLevel + 1);
+        qm.cool = 1; qm.fast = 0;
+      } else if (fps > 55 && qLevel > 0 && !qm.failed[qLevel - 1]) {
+        if (++qm.fast >= 3) { applyQuality(qLevel - 1); qm.cool = 1; qm.fast = 0; }
+      } else qm.fast = 0;
+    }
+
     function frame(now) {
       /* hidden behind another player (the technique lab's knot tab): draw nothing
          and report nothing until the canvas is shown again */
@@ -2545,7 +2593,8 @@ window.SutureLab = (function () {
          the camera settled and nothing changed. The last frame stays on screen, so the
          picture is the same; a phone just stops redrawing it sixty times a second. */
       if (!onScreen || isIdle()) { last = now; requestAnimationFrame(frame); return; }
-      const dt = Math.min(.05, (now - last) / 1000); last = now;
+      const rawDt = (now - last) / 1000;
+      const dt = Math.min(.05, rawDt); last = now;
       frameDt = dt;
       if (S.playing) {
         S.t += dt * S.speed;
@@ -2655,6 +2704,7 @@ window.SutureLab = (function () {
         opts.onTime(S.t, total, E.i, E.l, S.playing);
       }
       renderer.render(scene, camera);
+      if (S.playing) measureQuality(rawDt);
       requestAnimationFrame(frame);
     }
 
@@ -2708,6 +2758,9 @@ window.SutureLab = (function () {
         if (opts.onAuto) opts.onAuto(true);
       },
       setSpeed(v) { S.speed = v; },
+      /* the automatic quality: the level in use (1 sharpest, 4 lightest), where this
+         device started, and the last frame rate measured */
+      get quality() { return { level: qLevel + 1, start: qStart + 1, fps: qm.lastFps || null, ratio: renderer.getPixelRatio(), shadows: renderer.shadowMap.enabled }; },
       setView(n) { setView(n, true); },
       get seeThrough() { return !!S.seeThrough; },
       setSeeThrough(v) { S.seeThrough = !!v; applyViewFlags(); return S.seeThrough; },
