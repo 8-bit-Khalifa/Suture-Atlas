@@ -2467,6 +2467,24 @@ window.SutureLab = (function () {
       scene.fog = o ? new T3.Fog(scene.background.getHex(), 120, 300) : null;
       if (fog0 !== !!scene.fog) scene.traverse(n => { if (n.material) [].concat(n.material).forEach(mm => { mm.needsUpdate = true; }); });
       applyLayerLook();
+      /* Build the organ's and the block's graphics for both the whole view and the cut
+         view now, while the tab is loading: built on first use instead, every early
+         switch between the 3D view and the cross-section made the video stall. */
+      if (o) {
+        const mats = [];
+        o.group.traverse(n => { if (n.material && mats.indexOf(n.material) < 0) mats.push(n.material); });
+        const warm = planes => {
+          mats.forEach(m => { m.clippingPlanes = planes; m.needsUpdate = true; });
+          try { renderer.compile(scene, camera); } catch (e) { /* compiled on first draw instead */ }
+        };
+        warm([clipPlane]);
+        warm([]);
+        const clip0 = S.clip;
+        S.clip = !clip0;
+        applyViewFlags();
+        try { renderer.compile(scene, camera); } catch (e) { /* as above */ }
+        S.clip = clip0;
+      }
       applyViewFlags();
       if (opts.onContext) opts.onContext(contextInfo());
     }

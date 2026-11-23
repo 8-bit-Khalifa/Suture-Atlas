@@ -107,7 +107,21 @@ window.SutureContext = (function () {
     K.group.add(K.capsG);
     K.capsG.visible = false;
     K.M = o => {
-      const m = new T3.MeshStandardMaterial(Object.assign({ roughness: 0.82, metalness: 0, envMapIntensity: 0.16 }, o));
+      /* The surroundings are drawn with cheaper shading than the working tissue: the
+         organ fills most of the screen, so its cost is paid on nearly every pixel. A
+         shiny, wet surface keeps a simple highlight; a matte one (skin, coat, drape) is
+         lit per vertex, which looks the same on a matte surface. No bump maps and no
+         environment reflections out here. */
+      const p = Object.assign({}, o);
+      const rough = p.roughness == null ? 0.82 : p.roughness;
+      const env = p.envMapIntensity == null ? 0.16 : p.envMapIntensity;
+      ['roughness', 'metalness', 'envMapIntensity', 'bumpMap', 'bumpScale'].forEach(k => { delete p[k]; });
+      const m = rough <= 0.55
+        ? new T3.MeshPhongMaterial(Object.assign({ specular: 0x262626, shininess: Math.round((1 - rough) * 55) }, p))
+        : new T3.MeshLambertMaterial(p);
+      /* the studio light a surface used to pick up from the environment, given back as
+         brightness, so the organ still matches the tissue in the window */
+      m.color.multiplyScalar(1 + env * 0.8);
       K.mats.push(m);
       return m;
     };
@@ -115,7 +129,9 @@ window.SutureContext = (function () {
       o = o || {};
       K.geos.push(geo);
       const me = new T3.Mesh(geo, mat);
-      me.receiveShadow = true;
+      /* the instruments' shadows fall on the working tissue; out here they would cost
+         a shadow lookup on almost every pixel for nearly nothing */
+      me.receiveShadow = false;
       me.castShadow = !!o.cast;
       if (o.noCut) K.cutHidden.push(me);
       if (o.order != null) me.renderOrder = o.order;
@@ -176,7 +192,7 @@ window.SutureContext = (function () {
       if (!b.poly || b.poly.length < 3) return;
       const shape = new T3.Shape(b.poly.map(p => new T3.Vector2(p[0], p[1])));
       const geo = new T3.ShapeGeometry(shape);
-      const mat = new T3.MeshStandardMaterial({ color: b.c, roughness: 0.95, metalness: 0, side: T3.DoubleSide, envMapIntensity: 0.1 });
+      const mat = new T3.MeshLambertMaterial({ color: b.c, side: T3.DoubleSide });
       mat.userData = { c: b.c, sc: b.sc || b.c };
       const me = new T3.Mesh(geo, mat);
       me.position.z = b.z || 0;
